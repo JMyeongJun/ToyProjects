@@ -9,21 +9,24 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-public class Calc extends JFrame{
+public class Calc extends JFrame {
 
 	JLabel label;
 	JPanel panel;
 	JButton[] num;
 	JButton sum, sub, mul, div, back, erase, equal, pm, dot;
-	
-	Double a = null, b = null;
-	char calc;
+
+	Double operand1 = null, operand2 = null;
+	char operator;
 
 	public Calc() {
 		setTitle("Calculator");
@@ -38,12 +41,13 @@ public class Calc extends JFrame{
 		System.out.println("실행");
 	}
 
+	// 컴포넌트 초기화
 	private void initComponents() {
-		label = new JLabel(" ");
+		label = new JLabel("0");
 		label.setBackground(Color.gray);
 		label.setOpaque(true);
 		label.setHorizontalAlignment(JLabel.RIGHT);
-		label.setBorder(BorderFactory.createEmptyBorder(0,10,0,10));
+		label.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
 
 		panel = new JPanel();
 		panel.setLayout(new GridBagLayout());
@@ -66,9 +70,10 @@ public class Calc extends JFrame{
 		initLayout();
 		initFont();
 		initActions();
-		
+
 	}
 
+	// 레이아웃 초기화
 	public void initLayout() {
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.fill = GridBagConstraints.BOTH;
@@ -113,29 +118,22 @@ public class Calc extends JFrame{
 		setGbc(gbc, 1, 4, 1, 1);
 		panel.add(num[0], gbc);
 	}
-	
-	private void initFont() {
-		changeFont(this, new Font("San Serif", Font.BOLD, 30));
-		label.setFont(new Font("San Serif", Font.BOLD, 45));
-	}
 
-	private void initActions() {
-		for (int i = 0; i < num.length; i++) {
-			num[i].addActionListener(new NumBtnAction());
-		}
-		sum.addActionListener(new CalcBtnAction());
-		sub.addActionListener(new CalcBtnAction());
-		mul.addActionListener(new CalcBtnAction());
-		div.addActionListener(new CalcBtnAction());
-	}
-	
+	// 레이아웃 초기화 함수
 	private void setGbc(GridBagConstraints gbc, int gridx, int gridy, int gridwidth, int gridheight) {
 		gbc.gridx = gridx;
 		gbc.gridy = gridy;
 		gbc.gridwidth = gridwidth;
 		gbc.gridheight = gridheight;
 	}
-
+	
+	// 폰트 초기화
+	private void initFont() {
+		changeFont(this, new Font("San Serif", Font.BOLD, 30));
+		label.setFont(new Font("San Serif", Font.BOLD, 45));
+	}
+	
+	// 폰트 초기화 함수
 	private void changeFont(Component component, Font font) {
 		component.setFont(font);
 		if (component instanceof Container) {
@@ -145,29 +143,122 @@ public class Calc extends JFrame{
 		}
 	}
 
-	class NumBtnAction implements ActionListener{
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			// TODO Auto-generated method stub
-			System.out.println(e.getActionCommand().trim());
-			label.setText(label.getText() + e.getActionCommand().trim());
+	// 버튼 액션 초기화
+	private void initActions() {
+		for (int i = 0; i < num.length; i++) {
+			num[i].addActionListener(new NumBtnAction());
 		}
-	}
-	
-	class CalcBtnAction implements ActionListener{
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			// TODO Auto-generated method stub
-			System.out.println(e.getActionCommand().trim());
-			if(a == null) {
-				a = Double.parseDouble(label.getText());
-				System.out.println("a : " + a);
+		sum.addActionListener(new CalcBtnAction());
+		sub.addActionListener(new CalcBtnAction());
+		mul.addActionListener(new CalcBtnAction());
+		div.addActionListener(new CalcBtnAction());
+		back.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String labelText = label.getText();
+				if (!labelText.equals("0")) {
+					if (labelText.length() == 1) {
+						label.setText("0");
+					} else {
+						label.setText(labelText.substring(0, labelText.length() - 1));
+					}
+				}
 			}
-			calc = e.getActionCommand().charAt(0);
-			System.out.println("calc : " + calc);
+		});
+		erase.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				label.setText("0");
+				operand1 = null;
+				operand2 = null;
+				operator = ' ';
+			}
+		});
+		equal.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (operand1 != null && operator != ' ') {
+					if(operand2 == null) {
+						operand2 = Double.parseDouble(label.getText());
+					}else {
+						operand1 = Double.parseDouble(label.getText());
+					}
+					
+					System.out.println("operand2 : " + operand2);
+					String str = operand1.toString() + operator + operand2.toString();
+					System.out.println("str : " + str);
+
+					double ret = 0;
+					switch (operator) {
+					case '+':
+						ret = operand1 + operand2;
+						break;
+					case '-':
+						ret = operand1 - operand2;
+						break;
+					case '*':
+						ret = operand1 * operand2;
+						break;
+					case '/':
+						ret = operand1 / operand2;
+						break;
+					}
+					
+					label.setText(String.valueOf(ret));
+				}
+			}
+		});
+		pm.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String labelText = label.getText();
+				if(!labelText.equals("0") && labelText.charAt(0) != '-') {
+					label.setText("-" + labelText);
+				}else if(labelText.charAt(0) == '-'){
+					label.setText(labelText.substring(1));
+				}
+			}
+		});
+		dot.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(!label.getText().contains(".")) {
+					label.setText(label.getText() + ".");
+				}
+			}
+		});
+	}
+
+	// 숫자 버튼 액션 클래스
+	class NumBtnAction implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+//			System.out.println(e.getActionCommand());
+			if (label.getText().equals("0")) {
+				label.setText(e.getActionCommand());
+			} else {
+				label.setText(label.getText() + e.getActionCommand());
+			}
 		}
 	}
 	
+	// 연산자 버튼 액션 클래스
+	class CalcBtnAction implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+//			System.out.println(e.getActionCommand());
+			if (operand1 == null) {
+				operand1 = Double.parseDouble(label.getText());
+				System.out.println("operand1 : " + operand1);
+			}
+			operator = e.getActionCommand().charAt(0);
+			System.out.println("calc : " + operator);
+			label.setText("0");
+		}
+	}
+
 	public static void main(String[] args) {
 		new Calc();
 	}

@@ -18,7 +18,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-public class Calc extends JFrame {
+public class UI extends JFrame {
 
 	JLabel label;
 	JPanel panel;
@@ -28,7 +28,7 @@ public class Calc extends JFrame {
 	Double operand1 = null, operand2 = null;
 	char operator;
 
-	public Calc() {
+	public UI() {
 		setTitle("Calculator");
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setSize(400, 600);
@@ -257,10 +257,6 @@ public class Calc extends JFrame {
 			System.out.println("calc : " + operator);
 			label.setText("0");
 		}
-	}
-
-	public static void main(String[] args) {
-		new Calc();
 	}
 
 }

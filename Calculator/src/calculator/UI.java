@@ -20,13 +20,13 @@ import javax.swing.JPanel;
 
 public class UI extends JFrame {
 
-	JLabel label;
-	JPanel panel;
-	JButton[] num;
-	JButton sum, sub, mul, div, back, erase, equal, pm, dot;
+	private JLabel label;
+	private JPanel panel;
+	private JButton[] num;
+	private JButton sum, sub, mul, div, back, erase, equal, pm, dot;
 
-	Double operand1 = null, operand2 = null;
-	char operator;
+	private Double operand1 = null, operand2 = null;
+	private char operator;
 
 	public UI() {
 		setTitle("Calculator");
@@ -74,7 +74,7 @@ public class UI extends JFrame {
 	}
 
 	// 레이아웃 초기화
-	public void initLayout() {
+	private void initLayout() {
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.fill = GridBagConstraints.BOTH;
 		// frame

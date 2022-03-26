@@ -16,14 +16,14 @@ public class Main {
 		
 		System.out.print("말 선택 : ");
 		while(!(input = sc.nextLine()).equals("exit")) {
-			li = input.split(",");
-			System.out.println(chessMap[Integer.parseInt(li[0])][Integer.parseInt(li[1])] + "선택 " + Arrays.toString(li));
+			li = input.split(" ");
+			System.out.println("선택 : " + chessMap[Integer.parseInt(li[0])][Integer.parseInt(li[1])] + Arrays.toString(li));
 			char temp = chessMap[Integer.parseInt(li[0])][Integer.parseInt(li[1])];
 			chessMap[Integer.parseInt(li[0])][Integer.parseInt(li[1])] = ' ';
 			
 			System.out.print("이동할 곳 선택 : ");
 			input = sc.nextLine();
-			li = input.split(",");
+			li = input.split(" ");
 			System.out.println(Arrays.toString(li) + " 이동");
 			chessMap[Integer.parseInt(li[0])][Integer.parseInt(li[1])] = temp;
 			

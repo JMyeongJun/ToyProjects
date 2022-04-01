@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.Vector;
 
 public class MemberDao {
 
@@ -14,7 +14,7 @@ public class MemberDao {
 		conn = DBConn.getConnection();
 	}
 
-	// userid로 아이디 검색
+	// userid로 개인 아이디 검색
 	public MemberVo getMember(String userid) {
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -32,7 +32,7 @@ public class MemberDao {
 				vo = new MemberVo(rs.getString("USERID"), rs.getString("PASSWD"), rs.getString("USERNAME"),
 						rs.getString("JOB"), rs.getString("GENDER"), rs.getString("INTRO"), rs.getString("INDATE"));
 			}
-			
+
 			rs.close();
 			pstmt.close();
 		} catch (SQLException e) {
@@ -40,32 +40,35 @@ public class MemberDao {
 		}
 		return vo;
 	}
-	
+
 	// 모든 목록 조회
-	public ArrayList<MemberVo> getMemberList() {
+	public Vector<MemberVo> getMemberList() {
+		return getMemberList("");
+	}
+
+	// 멤버 조회
+	public Vector<MemberVo> getMemberList(String userid) {
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 
-		ArrayList<MemberVo> voList = null;
+		Vector<MemberVo> voList = null;
+		MemberVo vo = null;
 
-		String sql = "SELECT * FROM MEMBER ORDER BY INDATE ASC";
+		String sql = "SELECT * FROM MEMBER WHERE UPPER(USERID) LIKE UPPER(?)";
 
 		try {
 			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, "%" + userid + "%");
 			rs = pstmt.executeQuery();
 
-			while (rs.next()) {
-				if (voList == null) {
-					voList = new ArrayList<MemberVo>();
-				}
+			voList = new Vector<MemberVo>();
 
-				voList.add(new MemberVo(
-						rs.getString("USERID"), rs.getString("PASSWD"),
-						rs.getString("USERNAME"), rs.getString("JOB"), 
-						rs.getString("GENDER"), rs.getString("INTRO"), 
-						rs.getString("INDATE")));
+			while (rs.next()) {
+				vo = new MemberVo(rs.getString("USERID"), rs.getString("PASSWD"), rs.getString("USERNAME"),
+						rs.getString("JOB"), rs.getString("GENDER"), rs.getString("INTRO"), rs.getString("INDATE"));
+				voList.add(vo);
 			}
-			
+
 			rs.close();
 			pstmt.close();
 		} catch (SQLException e) {
@@ -75,14 +78,12 @@ public class MemberDao {
 	}
 
 	// 회원 추가
-	public void insertMember(
-			String userid, String passwd,
-			String username, String job,
-			String gender, String intro) {
+	public boolean insertMember(String userid, String passwd, String username, String job, String gender,
+			String intro) {
 		PreparedStatement pstmt = null;
-		
+
 		String sql = "INSERT INTO MEMBER VALUES (?, ?, ?, ?, ?, ?, DEFAULT)";
-		
+
 		try {
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, userid);
@@ -91,55 +92,62 @@ public class MemberDao {
 			pstmt.setString(4, job);
 			pstmt.setString(5, gender);
 			pstmt.setString(6, intro);
-			
+
 			pstmt.execute();
 			System.out.println("1 행이 삽입 되었습니다.");
-			
+
 			pstmt.close();
+			return true;
 		} catch (SQLException e) {
 			e.printStackTrace();
+			return false;
 		}
 	}
-	
+
 	// 회원 삭제
-	public void deleteMember(String userid) {
+	public boolean deleteMember(String userid) {
 		PreparedStatement pstmt = null;
-		
+
 		String sql = "DELETE FROM MEMBER WHERE USERID = ?";
-		
+
 		try {
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, userid);
-			
+
 			pstmt.execute();
 			System.out.println(userid + "가(이) 삭제 되었습니다.");
-			
+
 			pstmt.close();
+			return true;
 		} catch (SQLException e) {
 			e.printStackTrace();
+			return false;
 		}
 	}
-	
+
 	// 회원 수정
-	public void updateMember(String userid, String field, String setData) {
+	public int updateMember(String userid, String field, String setData) {
 		PreparedStatement pstmt = null;
-		
+		int aftcnt = 0;
 		String sql = "UPDATE MEMBER SET " + field + " = ? WHERE USERID = ?";
-		
+
 		try {
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, setData);
 			pstmt.setString(2, userid);
-			
-			pstmt.execute();
+
+			aftcnt = pstmt.executeUpdate();
 			System.out.printf("%s의 %s필드가 '%s'로 업데이트 되었습니다\n", userid, field, setData);
-			
+
 			pstmt.close();
+			return aftcnt;
 		} catch (SQLException e) {
 			e.printStackTrace();
+			return aftcnt;
 		}
 	}
-	
+
+	// 연결 해제
 	public void close() {
 		try {
 			conn.close();

@@ -4,10 +4,13 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -19,12 +22,12 @@ import model.MemberVo;
 public class MemberList extends JFrame implements ActionListener {
 
 	JPanel panelBtn;
-	JButton btnSignIn, btnRefresh, btnExcel;
-	JTable table;
+	JButton btnSignIn, btnRefresh, btnExcel, btnSearch;
+	static JTable table;
 	JScrollPane scrollpane;
 
-	SignIn signIn;
-	
+	MemberProc signIn;
+
 	public MemberList() {
 		setTitle("회원 관리 프로그램 v1.0");
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -46,16 +49,20 @@ public class MemberList extends JFrame implements ActionListener {
 		btnRefresh.addActionListener(this);
 		btnExcel = new JButton("엑셀로 저장");
 		btnExcel.addActionListener(this);
+		btnSearch = new JButton("ID 검색");
+		btnSearch.addActionListener(this);
 
 		panelBtn.setLayout(new FlowLayout());
 
 		panelBtn.add(btnSignIn);
 		panelBtn.add(btnRefresh);
 		panelBtn.add(btnExcel);
+		panelBtn.add(btnSearch);
 
 		// 테이블 패널 설정
 		table = new JTable();
 		tableRefresh(table);
+		table.addMouseListener(new TableMouseListener());
 
 		scrollpane = new JScrollPane(table);
 
@@ -63,19 +70,24 @@ public class MemberList extends JFrame implements ActionListener {
 		add(panelBtn, BorderLayout.NORTH);
 		add(scrollpane, BorderLayout.CENTER);
 	}
-	
-	private void tableRefresh(JTable table) {
-		table.setModel(new DefaultTableModel(getDataList(), getColumnList()) {
-			private static final long serialVersionUID = 1L;
 
+	public static void tableRefresh(JTable table) {
+		tableRefresh(table, "");
+	}
+
+	public static void tableRefresh(JTable table, String searchId) {
+		MemberDao dao = new MemberDao();
+		table.setModel(new DefaultTableModel(getDataList(dao.getMemberList(searchId)), getColumnList()) {
 			@Override
 			public boolean isCellEditable(int row, int column) {
 				return false;
 			}
 		});
+		table.getColumnModel().getColumn(4).setPreferredWidth(100);
+		table.repaint();
 	}
 
-	private Vector<?> getColumnList() {
+	private static Vector<?> getColumnList() {
 		Vector<String> cols = new Vector<String>();
 		cols.add("아이디");
 		cols.add("이름");
@@ -85,12 +97,10 @@ public class MemberList extends JFrame implements ActionListener {
 		return cols;
 	}
 
-	private Vector<? extends Vector<String>> getDataList() {
+	private static Vector<? extends Vector<String>> getDataList(Vector<MemberVo> voList) {
 		Vector<Vector<String>> list = new Vector<Vector<String>>();
 
-		MemberDao dao = new MemberDao();
-
-		for (MemberVo vo : dao.getMemberList()) {
+		for (MemberVo vo : voList) {
 			Vector<String> row = new Vector<String>();
 
 			row.add(vo.getUserid());
@@ -104,31 +114,65 @@ public class MemberList extends JFrame implements ActionListener {
 		return list;
 	}
 
-	public static void main(String[] args) {
-		new MemberList();
-	}
-
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		switch (e.getActionCommand()) {
 		case "회원 가입":
-			System.out.println("sign in");
-			if(signIn == null) {
-				signIn = new SignIn();
-			}else if(!signIn.isVisible()){
+			System.out.println("Sign in");
+			if (signIn == null) {
+				signIn = new MemberProc();
+			} else if (!signIn.isVisible()) {
 				signIn = null;
-				signIn = new SignIn();
+				signIn = new MemberProc();
 			}
 			break;
 		case "새로 고침":
-			System.out.println("refresh");
+			System.out.println("Refresh");
 			tableRefresh(table);
-			table.repaint();
 			break;
 		case "엑셀로 저장":
-			System.out.println("save excel");
+			System.out.println("Save Excel");
 			break;
+		case "ID 검색":
+			System.out.println("Search");
+			String searchId = JOptionPane.showInputDialog("조회할 ID 입력");
+			if (searchId != null) {
+				tableRefresh(table, searchId);
+			}
 		}
+	}
+
+	public static JTable getTable() {
+		return table;
+	}
+
+	class TableMouseListener implements MouseListener {
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			// TODO Auto-generated method stub
+			if (e.getClickCount() == 2) {
+				System.out.println("수정");
+				String userid = (String) table.getModel().getValueAt(table.getSelectedRow(), 0);
+				if (signIn == null) {
+					signIn = new MemberProc(userid);
+				} else if (!signIn.isVisible()) {
+					signIn = null;
+					signIn = new MemberProc(userid);
+				}
+			}
+		}
+		@Override
+		public void mousePressed(MouseEvent e) {}
+		@Override
+		public void mouseReleased(MouseEvent e) {}
+		@Override
+		public void mouseEntered(MouseEvent e) {}
+		@Override
+		public void mouseExited(MouseEvent e) {}
+	}
+
+	public static void main(String[] args) {
+		MemberList ml = new MemberList();
 	}
 
 }

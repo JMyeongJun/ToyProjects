@@ -46,7 +46,7 @@ public class MemberDao {
 		return getMemberList("");
 	}
 
-	// 멤버 조회
+	// 멤버(id) 목록 조회
 	public Vector<MemberVo> getMemberList(String userid) {
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -54,7 +54,10 @@ public class MemberDao {
 		Vector<MemberVo> voList = null;
 		MemberVo vo = null;
 
-		String sql = "SELECT * FROM MEMBER WHERE UPPER(USERID) LIKE UPPER(?)";
+		String sql = "SELECT * FROM MEMBER "
+				+ "WHERE UPPER(USERID) "
+				+ "LIKE UPPER(?) "
+				+ "ORDER BY INDATE DESC";
 
 		try {
 			pstmt = conn.prepareStatement(sql);

@@ -8,7 +8,9 @@ import java.awt.Insets;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.time.LocalDate;
+import java.util.Enumeration;
 
+import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -48,13 +50,13 @@ public class MemberProc extends JFrame {
 	}
 
 	public MemberProc(String userid) {
+		this();
 		currentUserId = userid;
 		setTitle("회원 수정 - " + currentUserId);
-
-		initComponents();
 		initUpdate(currentUserId);
 	}
 
+	// 초기화
 	private void initComponents() {
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		setLocationRelativeTo(null);
@@ -185,6 +187,18 @@ public class MemberProc extends JFrame {
 		setVisible(true);
 	}
 	
+	// 성별 라디오 버튼 그룹에서 선택된 요소 가져오기
+	private String getGender() {
+		Enumeration<AbstractButton> btns = btnGroup.getElements();
+		while(btns.hasMoreElements()) {
+			AbstractButton btn = btns.nextElement();
+			if(btn.isSelected()) {
+				return btn.getText().substring(0, 1);
+			}
+		}
+		return null;
+	}
+	
 	// 가입 액션
 	private void signIn() {
 		if(btnIdCheck.isEnabled()) {
@@ -199,12 +213,7 @@ public class MemberProc extends JFrame {
 //		String passwd = txtPw.getPassword().toString(); // 안전한 방법
 		String username = txtName.getText();
 		String job = (String) cbJob.getSelectedItem();
-		String gender = "";
-		if (rbtnMan.isSelected()) {
-			gender = "남";
-		} else if (rbtnWoman.isSelected()) {
-			gender = "여";
-		}
+		String gender = getGender();
 		String intro = txtIntro.getText();
 		
 		if (dao.insertMember(userid, passwd, username, job, gender, intro)) {
@@ -243,11 +252,7 @@ public class MemberProc extends JFrame {
 		dao.updateMember(currentUserId, "PASSWD", txtPw.getText());
 		dao.updateMember(currentUserId, "USERNAME", txtName.getText());
 		dao.updateMember(currentUserId, "JOB", (String) cbJob.getSelectedItem());
-		if (rbtnMan.isSelected()) {
-			dao.updateMember(currentUserId, "GENDER", "남");
-		} else if (rbtnWoman.isSelected()) {
-			dao.updateMember(currentUserId, "GENDER", "여");
-		}
+		dao.updateMember(currentUserId, "GENDER", getGender());
 		dao.updateMember(currentUserId, "INTRO", txtIntro.getText());
 
 		JOptionPane.showMessageDialog(null, "수정 되었습니다.", "아이디 - " + currentUserId, JOptionPane.DEFAULT_OPTION);

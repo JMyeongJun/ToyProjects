@@ -19,6 +19,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 
@@ -28,7 +29,7 @@ import model.MemberVo;
 public class MemberList extends JFrame implements ActionListener {
 
 	JPanel panelBtn;
-	JButton btnSignIn, btnRefresh, btnExcel, btnSearch;
+	JButton btnSignIn, btnEdit, btnRefresh, btnExcel, btnSearch;
 	static JTable table;
 	JScrollPane scrollpane;
 
@@ -38,6 +39,7 @@ public class MemberList extends JFrame implements ActionListener {
 		initComponents();
 	}
 
+	// 초기화
 	private void initComponents() {
 		// 프레임 설정
 		setTitle("회원 관리 프로그램 v1.0");
@@ -49,6 +51,8 @@ public class MemberList extends JFrame implements ActionListener {
 		panelBtn = new JPanel();
 		btnSignIn = new JButton("회원 가입");
 		btnSignIn.addActionListener(this);
+		btnEdit = new JButton("수정");
+		btnEdit.addActionListener(this);
 		btnRefresh = new JButton("새로 고침");
 		btnRefresh.addActionListener(this);
 		btnExcel = new JButton("엑셀로 저장");
@@ -58,14 +62,16 @@ public class MemberList extends JFrame implements ActionListener {
 
 		panelBtn.setLayout(new FlowLayout());
 		panelBtn.add(btnSignIn);
+		panelBtn.add(btnEdit);
 		panelBtn.add(btnRefresh);
 		panelBtn.add(btnExcel);
 		panelBtn.add(btnSearch);
 
 		// 테이블 패널 설정
 		table = new JTable();
-		tableRefresh(table);
+		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		table.addMouseListener(new TableMouseListener());
+		tableRefresh(table);
 		
 		scrollpane = new JScrollPane(table);
 
@@ -84,12 +90,11 @@ public class MemberList extends JFrame implements ActionListener {
 		switch (e.getActionCommand()) {
 		case "회원 가입":
 			System.out.println("Sign in");
-			if (signIn == null) {
-				signIn = new MemberProc();
-			} else if (!signIn.isVisible()) {
-				signIn = null;
-				signIn = new MemberProc();
-			}
+			showMemberProc();
+			break;
+		case "수정":
+			System.out.println("Edit");
+			edit();
 			break;
 		case "새로 고침":
 			System.out.println("Refresh");
@@ -98,7 +103,6 @@ public class MemberList extends JFrame implements ActionListener {
 		case "엑셀로 저장":
 			System.out.println("Save Excel");
 			saveExcel();
-			
 			break;
 		case "ID 검색":
 			System.out.println("Search");
@@ -106,6 +110,7 @@ public class MemberList extends JFrame implements ActionListener {
 			if (searchId != null) {
 				tableRefresh(table, searchId);
 			}
+			break;
 		}
 	}
 
@@ -114,7 +119,7 @@ public class MemberList extends JFrame implements ActionListener {
 		tableRefresh(table, "");
 	}
 
-	// 테이블 새로고침 (id 검색 결과로)
+	// 테이블 새로고침 - id 검색 결과
 	private static void tableRefresh(JTable table, String searchId) {
 		MemberDao dao = new MemberDao();
 		table.setModel(new DefaultTableModel(getDataList(dao.getMemberList(searchId)), getColumnList()) {
@@ -128,7 +133,7 @@ public class MemberList extends JFrame implements ActionListener {
 	}
 
 	// Table - Column 리스트 반환
-	private static Vector<?> getColumnList() {
+	public static Vector<?> getColumnList() {
 		Vector<String> cols = new Vector<String>();
 		cols.add("아이디");
 		cols.add("이름");
@@ -165,16 +170,9 @@ public class MemberList extends JFrame implements ActionListener {
 	class TableMouseListener implements MouseListener {
 		@Override
 		public void mouseClicked(MouseEvent e) {
-			// TODO Auto-generated method stub
+			// 테이블 row 더블 클릭시 수정
 			if (e.getClickCount() == 2) {
-				System.out.println("수정");
-				String userid = (String) table.getModel().getValueAt(table.getSelectedRow(), 0);
-				if (signIn == null) {
-					signIn = new MemberProc(userid);
-				} else if (!signIn.isVisible()) {
-					signIn = null;
-					signIn = new MemberProc(userid);
-				}
+				edit();
 			}
 		}
 
@@ -194,24 +192,60 @@ public class MemberList extends JFrame implements ActionListener {
 		public void mouseExited(MouseEvent e) {
 		}
 	}
+	
+	// 회원 정보 수정
+	private void edit() {
+		try {
+			String userid = (String) table.getModel().getValueAt(table.getSelectedRow(), 0);
+			showMemberProc(userid);
+		} catch (Exception e) {
+			System.out.println("No Selected Row!!");
+		}
+	}
+	
+	// MemberProc창 띄우기 - 회원가입
+	private void showMemberProc() {
+		if (signIn == null) {
+			signIn = new MemberProc();
+		} else if (!signIn.isVisible()) {
+			signIn = null;
+			signIn = new MemberProc();
+		}
+	}
+	
+	// MemberProc창 띄우기 - 수정
+	private void showMemberProc(String userid) {
+		if (signIn == null) {
+			signIn = new MemberProc(userid);
+		} else if (!signIn.isVisible()) {
+			signIn = null;
+			signIn = new MemberProc(userid);
+		}
+	}
 
 	// 엑셀 저장 - 저장 다이얼로그
 	private void saveExcel() {
 		File file = null;
 		JFileChooser fc = new JFileChooser(System.getProperty("user.home") + "/Desktop");
-		fc.setFileFilter(new FileNameExtensionFilter("*.csv", "csv"));
+		fc.setFileFilter(new FileNameExtensionFilter("*.xlsx", "xlsx"));
+		fc.addChoosableFileFilter(new FileNameExtensionFilter("*.xls", "xls"));
+		fc.addChoosableFileFilter(new FileNameExtensionFilter("*.csv", "csv"));
+		fc.addChoosableFileFilter(new FileNameExtensionFilter("*.txt", "txt"));
 		
 		if(fc.showSaveDialog(fc) == JFileChooser.CANCEL_OPTION) {
 			return;
 		};
 		
-		if (fc.getFileFilter().getDescription().equals("모든 파일")) {
+		String filter = fc.getFileFilter().getDescription();
+		
+		if (filter.equals("모든 파일")) {
 			file = fc.getSelectedFile();
 		}else {
-			file = new File(fc.getSelectedFile().toString().substring(1));
+			file = new File(fc.getSelectedFile().toString() + filter.substring(1));
 		}
 		
-		writeFile(file);
+		new SaveExcel(file);
+//		writeFile(file);
 	}
 	
 	// 엑셀 저장 - 파일 쓰기

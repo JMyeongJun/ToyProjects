@@ -1,18 +1,23 @@
 package view;
 
+import java.awt.BorderLayout;
+
 import javax.swing.JButton;
-import javax.swing.JLabel;
 
 public class OrderPanel extends BasicPanel{
-	JButton btn;
+	JButton btn, btn2;
 	
 	public OrderPanel() {
-		top_top.add(new JLabel("top_top 패널입니다"));
-		top_bottom.add(new JLabel("top_bottom 패널입니다"));
-		bottom.add(new JLabel("bottom 패널입니다"));
-		side.add(new JLabel("side 패널입니다"));
+		initcomponents();
+	}
+	
+	public void initcomponents() {
+		btn = new JButton("버튼입니다");
+		btn2 = new JButton("버튼입니다2");
+		side.setLayout(new BorderLayout());
 		
-		btn = new JButton("btn");
-		side.add(btn);
+		side.add(btn, BorderLayout.SOUTH);
+		side.add(btn2, BorderLayout.CENTER);
+		
 	}
 }

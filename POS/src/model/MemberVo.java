@@ -1,101 +1,45 @@
 package model;
 
 public class MemberVo {
-
-	private String userid;
-	private String passwd;
-	private String username;
-	private String job;
-	private String gender;
-	private String intro;
-	private String indate;
+	private String memberName, phoneNumber;
+	private int point;
 
 	public MemberVo() {
 	}
 
-	public MemberVo(String userid, String passwd, String username, String job, String gender, String intro,
-			String indate) {
+	public MemberVo(String memberName, String phoneNumber, int point) {
 		super();
-		this.userid = userid;
-		this.passwd = passwd;
-		this.username = username;
-		this.job = job;
-		this.gender = gender;
-		this.intro = intro;
-		this.indate = indate;
+		this.memberName = memberName;
+		this.phoneNumber = phoneNumber;
+		this.point = point;
 	}
 
-	public String getUserid() {
-		return userid;
+	public String getMemberName() {
+		return memberName;
 	}
 
-	public void setUserid(String userid) {
-		this.userid = userid;
+	public void setMemberName(String memberName) {
+		this.memberName = memberName;
 	}
 
-	public String getPasswd() {
-		return passwd;
+	public String getPhoneNumber() {
+		return phoneNumber;
 	}
 
-	public void setPasswd(String passwd) {
-		this.passwd = passwd;
+	public void setPhoneNumber(String phoneNumber) {
+		this.phoneNumber = phoneNumber;
 	}
 
-	public String getUsername() {
-		return username;
+	public int getPoint() {
+		return point;
 	}
 
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-	public String getJob() {
-		return job;
-	}
-
-	public void setJob(String job) {
-		this.job = job;
-	}
-
-	public String getGender() {
-		return gender;
-	}
-
-	public void setGender(String gender) {
-		this.gender = gender;
-	}
-
-	public String getIntro() {
-		return intro;
-	}
-
-	public void setIntro(String intro) {
-		this.intro = intro;
-	}
-
-	public String getIndate() {
-		return indate;
-	}
-
-	public void setIndate(String indate) {
-		this.indate = indate;
+	public void setPoint(int point) {
+		this.point = point;
 	}
 
 	@Override
 	public String toString() {
-		return "MemberVo [userid=" + userid + ", passwd=" + passwd + ", username=" + username
-				+ ", job=" + job + ", gender=" + gender + ", intro=" + intro
-				+ ", indate=" + indate + "]";
+		return "MemberVo [memberName=" + memberName + ", phoneNumber=" + phoneNumber + ", point=" + point + "]";
 	}
-
-//	public String toString2() {
-//		return userid + "," + passwd + "," + username + "," + job + ","
-//				+ gender + "," + intro + "," + indate;
-//	}
-	
-	public String toString2() {
-		return userid + "," + username + "," + job + ","
-				+ gender + "," + indate;
-	}
-
 }

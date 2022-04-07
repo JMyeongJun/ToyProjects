@@ -7,156 +7,93 @@ import java.sql.SQLException;
 import java.util.Vector;
 
 public class MemberDao {
-
 	Connection conn = null;
-
+	
 	public MemberDao() {
 		conn = DBConn.getConnection();
 	}
-
-	// userid로 개인 아이디 검색
-	public MemberVo getMember(String userid) {
+	
+	public Vector<MemberVo> getMemberList(){
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
-
-		MemberVo vo = null;
-
-		String sql = "SELECT * FROM MEMBER WHERE USERID = ?";
-
-		try {
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1, userid);
-			rs = pstmt.executeQuery();
-
-			if (rs.next()) {
-				vo = new MemberVo(rs.getString("USERID"), rs.getString("PASSWD"), rs.getString("USERNAME"),
-						rs.getString("JOB"), rs.getString("GENDER"), rs.getString("INTRO"), rs.getString("INDATE"));
-			}
-
-			rs.close();
-			pstmt.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return vo;
-	}
-
-	// 모든 목록 조회
-	public Vector<MemberVo> getMemberList() {
-		return getMemberList("");
-	}
-
-	// 멤버(id) 목록 조회
-	public Vector<MemberVo> getMemberList(String userid) {
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-
+		
+		String sql = "SELECT * FROM MEMBERS";
+		
 		Vector<MemberVo> voList = null;
-		MemberVo vo = null;
-
-		String sql = "SELECT * FROM MEMBER "
-				+ "WHERE UPPER(USERID) "
-				+ "LIKE UPPER(?) "
-				+ "ORDER BY INDATE DESC";
-
+		
 		try {
 			pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1, "%" + userid + "%");
 			rs = pstmt.executeQuery();
-
+			
 			voList = new Vector<MemberVo>();
-
-			while (rs.next()) {
-				vo = new MemberVo(rs.getString("USERID"), rs.getString("PASSWD"), rs.getString("USERNAME"),
-						rs.getString("JOB"), rs.getString("GENDER"), rs.getString("INTRO"), rs.getString("INDATE"));
+			
+			while(rs.next()) {
+				MemberVo vo = new MemberVo(
+						rs.getString("MEMBER_NAME"), rs.getString("PHONE_NUMBER"),
+						rs.getInt("POINT"));
 				voList.add(vo);
 			}
-
-			rs.close();
-			pstmt.close();
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
 		return voList;
 	}
-
-	// 회원 추가
-	public boolean insertMember(String userid, String passwd, String username, String job, String gender,
-			String intro) {
+	
+	public void insertMember(String memberName, String phoneNumber) {
 		PreparedStatement pstmt = null;
-
-		String sql = "INSERT INTO MEMBER VALUES (?, ?, ?, ?, ?, ?, DEFAULT)";
-
+		
+		String sql = "INSERT INTO MEMBERS VALUES "
+				+ "(?, ?, 0)";
+		
 		try {
 			pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1, userid);
-			pstmt.setString(2, passwd);
-			pstmt.setString(3, username);
-			pstmt.setString(4, job);
-			pstmt.setString(5, gender);
-			pstmt.setString(6, intro);
-
+			pstmt.setString(1, memberName);
+			pstmt.setString(2, phoneNumber);
+			
 			pstmt.execute();
-			System.out.println("1 행이 삽입 되었습니다.");
-
+			System.out.println("MemberDao: 1 행이 삽입 되었습니다.");
+			
 			pstmt.close();
-			return true;
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
-			return false;
 		}
 	}
-
-	// 회원 삭제
-	public boolean deleteMember(String userid) {
+	
+	public void updateMember(String currentPhoneNumber, String field, String setData) {
 		PreparedStatement pstmt = null;
+		String sql = "UPDATE MEMBERS SET " + field + " = ? WHERE PHONE_NUMBER = ?";
 
-		String sql = "DELETE FROM MEMBER WHERE USERID = ?";
-
-		try {
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1, userid);
-
-			pstmt.execute();
-			System.out.println(userid + "가(이) 삭제 되었습니다.");
-
-			pstmt.close();
-			return true;
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return false;
-		}
-	}
-
-	// 회원 수정
-	public int updateMember(String userid, String field, String setData) {
-		PreparedStatement pstmt = null;
-		int aftcnt = 0;
-		String sql = "UPDATE MEMBER SET " + field + " = ? WHERE USERID = ?";
-
+		
 		try {
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, setData);
-			pstmt.setString(2, userid);
+			pstmt.setString(2, currentPhoneNumber);
 
-			aftcnt = pstmt.executeUpdate();
-			System.out.printf("%s의 %s필드가 '%s'로 업데이트 되었습니다\n", userid, field, setData);
+			pstmt.executeUpdate();
+			System.out.printf("MemberDao: %s의 %s필드가 '%s'으로 업데이트 되었습니다\n", currentPhoneNumber, field, setData);
 
 			pstmt.close();
-			return aftcnt;
 		} catch (SQLException e) {
 			e.printStackTrace();
-			return aftcnt;
 		}
 	}
+	
+	public void deleteMember(String phoneNumber) {
+		PreparedStatement pstmt = null;
 
-	// 연결 해제
-	public void close() {
+		String sql = "DELETE FROM MEMBERS WHERE PHONE_NUMBER = ?";
+
 		try {
-			conn.close();
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, phoneNumber);
+
+			pstmt.execute();
+			System.out.println("MemberDao: '" + phoneNumber + "'가(이) 삭제 되었습니다.");
+
+			pstmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
-
 }

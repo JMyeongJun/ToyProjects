@@ -13,9 +13,9 @@ public class SalesPanel extends BasicPanel {
 		top_top.add(new JLabel("SalesPanel"));
 
 		btn = new JButton("btn2");
-		btn.addActionListener(e -> {
-			mf.change("OrderPanel");
-		});
+//		btn.addActionListener(e -> {
+//			mf.change("OrderPanel");
+//		});
 
 		side.add(btn);
 	}

@@ -60,18 +60,19 @@ public class MemberDao {
 		}
 	}
 	
-	public void updateMember(String currentPhoneNumber, String field, String setData) {
+	public void updateMember(String currentPhoneNumber, String memberName, String phoneNumber) {
 		PreparedStatement pstmt = null;
-		String sql = "UPDATE MEMBERS SET " + field + " = ? WHERE PHONE_NUMBER = ?";
+		String sql = "UPDATE MEMBERS SET MEMBER_NAME = ?, PHONE_NUMBER = ? WHERE PHONE_NUMBER = ?";
 
 		
 		try {
 			pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1, setData);
-			pstmt.setString(2, currentPhoneNumber);
+			pstmt.setString(1, memberName);
+			pstmt.setString(2, phoneNumber);
+			pstmt.setString(3, currentPhoneNumber);
 
 			pstmt.executeUpdate();
-			System.out.printf("MemberDao: %s의 %s필드가 '%s'으로 업데이트 되었습니다\n", currentPhoneNumber, field, setData);
+			System.out.println("MemberDao: 수정 되었습니다\n");
 
 			pstmt.close();
 		} catch (SQLException e) {

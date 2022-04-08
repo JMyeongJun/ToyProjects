@@ -12,9 +12,31 @@ public class MenuDao {
 		conn = DBConn.getConnection();
 	}
 	
-	// 이름으로 메뉴 정보 가져오기
-	public MenuVo getMenuVoByName(String menuName) {
-		return null;
+	// id로 메뉴 정보 가져오기
+	public MenuVo getMenuById(int menuId) {
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+
+		String sql = "SELECT * FROM MENU WHERE MENU_ID = ?";
+
+		MenuVo vo = null;
+		
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, menuId);
+			rs = pstmt.executeQuery();
+
+			if (rs.next()) {
+				vo = new MenuVo(Integer.parseInt(rs.getString("MENU_ID")),
+						rs.getString("MENU_NAME"),
+						Integer.parseInt(rs.getString("PRICE")),
+						Integer.parseInt(rs.getString("CATEGORY_ID")));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return vo;
 	}
 	
 	// 전체 메뉴 리스트 가져오기

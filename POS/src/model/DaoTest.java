@@ -1,6 +1,7 @@
 package model;
 
 import java.util.Scanner;
+import java.util.Vector;
 
 public class DaoTest {
 	public static void main(String[] args) {
@@ -8,6 +9,7 @@ public class DaoTest {
 		MenuDao mdao = new MenuDao();
 		CategoryDao cdao = new CategoryDao();
 		MemberDao bdao = new MemberDao();
+		OrderDao odao = new OrderDao();
 
 		Scanner sc = new Scanner(System.in);
 
@@ -18,6 +20,7 @@ public class DaoTest {
 			System.out.println("선택 1 : 메뉴");
 			System.out.println("선택 2 : 카테고리");
 			System.out.println("선택 3 : 멤버");
+			System.out.println("선택 4 : 주문");
 
 			switch (sc.nextInt()) {
 			case 1:
@@ -83,6 +86,15 @@ public class DaoTest {
 					System.out.println(vo);
 				}
 				break;
+			case 4:
+				System.out.println("주문---------------");
+//				System.out.println("phoneNumber, Vector<OrderVo>");
+				Vector<OrderVo> voList = new Vector<OrderVo>();
+				voList.add(new OrderVo(1, 2));
+				voList.add(new OrderVo(1, 3));
+				voList.add(new OrderVo(2, 6));
+				odao.insertOrder("010-0000-0000", voList);
+				
 			default:
 				bo = false;
 			}

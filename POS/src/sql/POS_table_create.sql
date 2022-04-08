@@ -26,14 +26,6 @@ ALTER TABLE menu ADD CONSTRAINT menu_pk PRIMARY KEY ( menu_id );
 
 ALTER TABLE menu ADD CONSTRAINT menu__un UNIQUE ( menu_name );
 
-CREATE TABLE "ORDER" (
-    order_id     NUMBER NOT NULL,
-    phone_number VARCHAR2(30) NOT NULL,
-    order_date   DATE NOT NULL
-);
-
-ALTER TABLE "ORDER" ADD CONSTRAINT order_pk PRIMARY KEY ( order_id );
-
 CREATE TABLE order_list (
     order_id    NUMBER NOT NULL,
     menu_id     NUMBER(4) NOT NULL,
@@ -41,12 +33,20 @@ CREATE TABLE order_list (
     total_price NUMBER(10)
 );
 
+CREATE TABLE orders (
+    order_id     NUMBER NOT NULL,
+    phone_number VARCHAR2(30) NOT NULL,
+    order_date   DATE DEFAULT SYSDATE NOT NULL
+);
+
+ALTER TABLE orders ADD CONSTRAINT order_pk PRIMARY KEY ( order_id );
+
 CREATE TABLE sales (
     sales_id       NUMBER NOT NULL,
     order_id       NUMBER NOT NULL,
     payment_method VARCHAR2(30),
     use_point      NUMBER(10),
-    sales_date     DATE NOT NULL
+    sales_date     DATE DEFAULT SYSDATE NOT NULL
 );
 
 ALTER TABLE sales ADD CONSTRAINT sales_pk PRIMARY KEY ( sales_id );
@@ -61,12 +61,12 @@ ALTER TABLE order_list
 
 ALTER TABLE order_list
     ADD CONSTRAINT order_list_order_fk FOREIGN KEY ( order_id )
-        REFERENCES "ORDER" ( order_id );
+        REFERENCES orders ( order_id );
 
-ALTER TABLE "ORDER"
+ALTER TABLE orders
     ADD CONSTRAINT order_members_fk FOREIGN KEY ( phone_number )
         REFERENCES members ( phone_number );
 
 ALTER TABLE sales
     ADD CONSTRAINT sales_order_fk FOREIGN KEY ( order_id )
-        REFERENCES "ORDER" ( order_id );
+        REFERENCES orders ( order_id );

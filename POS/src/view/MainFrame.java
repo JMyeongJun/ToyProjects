@@ -3,6 +3,7 @@ package view;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+// 메인 실행창
 public class MainFrame extends JFrame {
 
 	JPanel OrderPanel;
@@ -14,8 +15,9 @@ public class MainFrame extends JFrame {
 	public void init() {
 		setTitle("MainFrame");
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-//		setLocationRelativeTo(null);
-
+		setLocationRelativeTo(null);
+		
+		// new OrderPanel();부분 자기걸로 변경!!!!!!
 		OrderPanel = new OrderPanel();
 
 		add(OrderPanel);

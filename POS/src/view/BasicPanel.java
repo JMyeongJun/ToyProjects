@@ -12,6 +12,8 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+// 기본 패널(건들지 마세요)
+// - 본인 패널 클래스 만들고 extends BasicPanel 하고난 후 사용
 public class BasicPanel extends JPanel {
 	public JPanel top, bottom, side;
 	public JPanel top_top, top_bottom;

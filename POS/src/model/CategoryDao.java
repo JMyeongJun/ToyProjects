@@ -70,14 +70,14 @@ public class CategoryDao {
 	public void insertCategory(String categoryName) {
 		PreparedStatement pstmt = null;
 
-		String sql = "INSERT INTO CATEGORIES VALUES" + "((SELECT MAX(CATEGORY_ID) + 1 FROM CATEGORIES), " + "?)";
+		String sql = "INSERT INTO CATEGORIES VALUES" + "((SELECT NVL(MAX(CATEGORY_ID), 0) + 1 FROM CATEGORIES), " + "?)";
 
 		try {
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, categoryName);
 
 			pstmt.execute();
-			System.out.println("CategoryDao - 1 행이 삽입 되었습니다.");
+			System.out.println("CategoryDao: 1 행이 삽입 되었습니다.");
 
 			pstmt.close();
 		} catch (Exception e) {
@@ -98,9 +98,9 @@ public class CategoryDao {
 
 			if (pstmt.executeUpdate() > 0) {
 				System.out
-						.println("CategoryDao - '" + currentCategoryName + "' -> '" + categoryName + "' 로 이름 변경되었습니다.");
+						.println("CategoryDao: '" + currentCategoryName + "' -> '" + categoryName + "' 로 이름 변경되었습니다.");
 			} else {
-				System.out.println("CategoryDao - 수정 실패하였습니다.");
+				System.out.println("CategoryDao: 수정 실패하였습니다.");
 			}
 			pstmt.close();
 		} catch (Exception e) {
@@ -112,14 +112,14 @@ public class CategoryDao {
 	public void deleteCategory(String categoryName) {
 		PreparedStatement pstmt = null;
 
-		String sql = "DELETE FROM CATEGORIES" + "WHERE CATEGORY_NAME = ?";
+		String sql = "DELETE FROM CATEGORIES " + "WHERE CATEGORY_NAME = ?";
 
 		try {
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, categoryName);
 
 			pstmt.execute();
-			System.out.println("CategoryDao - '" + categoryName + "' 가(이) 삭제 되었습니다.");
+			System.out.println("CategoryDao: '" + categoryName + "' 가(이) 삭제 되었습니다.");
 
 			pstmt.close();
 		} catch (Exception e) {

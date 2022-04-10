@@ -68,6 +68,35 @@ public class MenuDao {
 		return voList;
 	}
 	
+	public Vector<MenuVo> getMenuListByCategoryId(int categoryId){
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+
+		String sql = "SELECT * FROM MENU WHERE CATEGORY_ID = ? ORDER BY MENU_ID ASC";
+
+		Vector<MenuVo> voList = null;
+
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, categoryId);
+			rs = pstmt.executeQuery();
+
+			voList = new Vector<MenuVo>();
+
+			while (rs.next()) {
+				MenuVo vo = new MenuVo(Integer.parseInt(rs.getString("MENU_ID")),
+						rs.getString("MENU_NAME"),
+						Integer.parseInt(rs.getString("PRICE")),
+						Integer.parseInt(rs.getString("CATEGORY_ID")));
+				voList.add(vo);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return voList;
+	}
+	
 	// 메뉴 추가 (메뉴이름, 가격, 카테고리아이디)
 	public void insertMenu(String menuName, int price, int categoryId) {
 		PreparedStatement pstmt = null;

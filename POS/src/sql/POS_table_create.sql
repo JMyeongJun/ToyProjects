@@ -35,7 +35,7 @@ CREATE TABLE order_list (
 
 CREATE TABLE orders (
     order_id     NUMBER NOT NULL,
-    phone_number VARCHAR2(30) NOT NULL,
+    phone_number VARCHAR2(30),
     order_date   DATE DEFAULT SYSDATE NOT NULL
 );
 
@@ -50,6 +50,8 @@ CREATE TABLE sales (
 );
 
 ALTER TABLE sales ADD CONSTRAINT sales_pk PRIMARY KEY ( sales_id );
+
+ALTER TABLE sales ADD CONSTRAINT sales_un UNIQUE ( order_id );
 
 ALTER TABLE menu
     ADD CONSTRAINT menu_categories_fk FOREIGN KEY ( category_id )

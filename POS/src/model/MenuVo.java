@@ -14,7 +14,7 @@ public class MenuVo {
 		this.categoryId = categoryID;
 		this.menuName = menuName;
 	}
-
+	
 	public int getMenuID() {
 		return menuID;
 	}

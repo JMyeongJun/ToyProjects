@@ -39,6 +39,11 @@ public class DaoTest {
 					// 메뉴이름 입력
 					mdao.deleteMenu(sc.next());
 					break;
+				case 4:
+					// 카테고리 아이디별 메뉴 리스트
+					for(MenuVo vo : mdao.getMenuListByCategoryId(sc.nextInt())) {
+						System.out.println(vo);
+					}
 				}
 				for(MenuVo vo : mdao.getMenuList()) {
 					System.out.println(vo);
@@ -91,9 +96,10 @@ public class DaoTest {
 //				System.out.println("phoneNumber, Vector<OrderVo>");
 				Vector<OrderVo> voList = new Vector<OrderVo>();
 				voList.add(new OrderVo(1, 2));
-				voList.add(new OrderVo(1, 3));
 				voList.add(new OrderVo(2, 6));
-				odao.insertOrder("010-0000-0000", voList);
+				voList.add(new OrderVo(3, 2));
+				odao.insertOrder("010-0000-0004", voList);
+				break;
 				
 			default:
 				bo = false;

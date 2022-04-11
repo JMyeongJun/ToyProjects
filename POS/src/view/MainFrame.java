@@ -18,7 +18,7 @@ public class MainFrame extends JFrame {
 		setLocationRelativeTo(null);
 		
 		// new OrderPanel();부분 자기걸로 변경!!!!!!
-		OrderPanel = new OrderPanel();
+		OrderPanel = new MenuPanel();
 
 		add(OrderPanel);
 

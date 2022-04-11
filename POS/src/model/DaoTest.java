@@ -10,6 +10,7 @@ public class DaoTest {
 		CategoryDao cdao = new CategoryDao();
 		MemberDao bdao = new MemberDao();
 		OrderDao odao = new OrderDao();
+		SalesDao sdao = new SalesDao();
 
 		Scanner sc = new Scanner(System.in);
 
@@ -95,12 +96,17 @@ public class DaoTest {
 				System.out.println("주문---------------");
 //				System.out.println("phoneNumber, Vector<OrderVo>");
 				Vector<OrderVo> voList = new Vector<OrderVo>();
-				voList.add(new OrderVo(1, 2));
-				voList.add(new OrderVo(2, 6));
-				voList.add(new OrderVo(3, 2));
-				odao.insertOrder("010-0000-0004", voList);
+				voList.add(new OrderVo(3, 10));
+				odao.insertOrder("010-0000-0001", voList);
 				break;
+			case 5:
+				System.out.println("판매");
+				sdao.insertSales("카드", 100);
 				
+				for(SalesVo vo : sdao.getSalesList()) {
+					System.out.println(vo);
+				}
+				break;
 			default:
 				bo = false;
 			}

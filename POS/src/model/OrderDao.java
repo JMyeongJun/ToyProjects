@@ -11,6 +11,7 @@ public class OrderDao {
 		conn = DBConn.getConnection();
 	}
 
+	// 주문추가
 	public void insertOrder(String phoneNumber, Vector<OrderVo> orderVoList) {
 		if (orderVoList == null) {
 			System.err.println("orderVo == null!!");
@@ -45,5 +46,9 @@ public class OrderDao {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public void getOrderListById(int orderId) {
+		
 	}
 }

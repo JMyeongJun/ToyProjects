@@ -12,6 +12,7 @@ public class CategoryDao {
 		conn = DBConn.getConnection();
 	}
 
+	// 아이디로 카테고리 조회
 	public CategoryVo getCategoryById(int categoryId) {
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -23,6 +24,34 @@ public class CategoryDao {
 		try {
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, categoryId);
+
+			rs = pstmt.executeQuery();
+			
+			vo = null;
+
+			if (rs.next()) {
+				vo = new CategoryVo(Integer.parseInt(rs.getString("CATEGORY_ID")),
+						rs.getString("CATEGORY_NAME"));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return vo;
+	}
+	
+	// 이름으로 카테고리 조회
+	public CategoryVo getCategoryByName(String categoryName) {
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+
+		String sql = "SELECT * FROM CATEGORIES WHERE CATEGORY_NAME = ?";
+
+		CategoryVo vo = null;
+
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, categoryName);
 
 			rs = pstmt.executeQuery();
 			

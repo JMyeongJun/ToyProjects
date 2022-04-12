@@ -20,9 +20,8 @@ import model.CategoryVo;
 import model.MenuDao;
 
 public class AddMenu extends JFrame {
-
-	// Fields
-	BasicPanel bp = null;
+	MenuPanel mp;
+	
 	JButton btnOk, btnCancel;
 	JComboBox cbCat;
 	JLabel lblMenuName, lblMenuPrice, lblCat;
@@ -38,11 +37,10 @@ public class AddMenu extends JFrame {
 	public AddMenu() {
 		initComponent();
 	}
-
-	public AddMenu(BasicPanel basicPanel) {
-		initComponent();
-		this.bp = basicPanel;
-
+	
+	public AddMenu(MenuPanel mp) {
+		this();
+		this.mp = mp;
 	}
 
 	private void initComponent() {
@@ -68,31 +66,18 @@ public class AddMenu extends JFrame {
 		gbAdd(tfMenuPrice, 0, 3, 1, 1);
 
 		// 이 부분 DB category에서 가져와야함.
-		CategoryDao dao = new CategoryDao();
-
 		JLabel lblCat = new JLabel("카테고리");
+		CategoryDao dao = new CategoryDao();
 		cat = dao.getCategoryList();
 
 		Vector<String> arr = new Vector<String>();
 		for (CategoryVo vo1 : cat) {
 			arr.add(vo1.getCategoryName());
 		}
-
 		cbCat = new JComboBox<String>(arr);
-//		for(CategoryVo vo1 : cat) {
-//			cbCat.addItem( new JComboBox( cat ));
-//		}
-//		for(CategoryVo vo2 : cat) {
-//			cbCat.addItem( new JComboBox( vo.getCategoryName() ));
-//		}
-//		for(CategoryVo vo3 : cat) { 
-//			cbCat.add(  vo2.getCategoryName() );
-//		}
 
-		// cbCat = new JComboBox(cat);
 		gbAdd(lblCat, 0, 4, 1, 1);
 		gbAdd(cbCat, 0, 5, 1, 1);
-		//
 
 		JPanel btnPanel = new JPanel();
 		btnCancel = new JButton("취소");
@@ -106,7 +91,6 @@ public class AddMenu extends JFrame {
 		btnOk.addActionListener((e) -> {
 			System.out.println("등록 버튼 클릭");
 			insertMenu();
-			btnOnOff(true);
 		});
 
 		btnCancel.addActionListener((e) -> {
@@ -114,6 +98,7 @@ public class AddMenu extends JFrame {
 		});
 
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		setLocationRelativeTo(null);
 		setSize(500, 500);
 		setVisible(true);
 
@@ -129,19 +114,6 @@ public class AddMenu extends JFrame {
 		this.add(c, gbc);
 	}
 
-	// datalist 처리 화면에 category들 보이게.
-	private static Vector<CategoryVo> getDataList() {
-		Vector<CategoryVo> v = new Vector<CategoryVo>();
-		CategoryDao dao = new CategoryDao();
-		v = dao.getCategoryList();
-		return v;
-	}
-
-	public static void main(String[] args) {
-		new AddMenu();
-
-	}
-
 	private void insertMenu() {
 		MenuDao dao = new MenuDao();
 		CategoryDao cdao = new CategoryDao();
@@ -152,10 +124,7 @@ public class AddMenu extends JFrame {
 		dao.insertMenu(menuName, menuPrice, menuCat);
 
 		this.dispose();
-	}
-
-	private void btnOnOff(boolean sw) {
-
+		mp.viewMenuByCategoryId(menuCat);
 	}
 
 }

@@ -20,17 +20,15 @@ import model.MenuDao;
 import model.MenuVo;
 
 public class ClickedMenu extends JFrame {
-
-	BasicPanel bp = null;
+	MenuPanel mp;
 
 	JButton btnCancel, btnDelete, btnUpdate;
 	JLabel lblMenuName, lblMenuPrice, lblCat;
 	JTextField tfMenuName, tfMenuPrice;
-	JComboBox cbCat;
+	JComboBox<String> cbCat;
 	CategoryVo cateVo;
 	Vector<CategoryVo> cat;
 
-	String menuName;
 	MenuVo vo;
 	GridBagLayout gb;
 	GridBagConstraints gbc;
@@ -39,22 +37,22 @@ public class ClickedMenu extends JFrame {
 		initComponent();
 	}
 
-	public ClickedMenu(BasicPanel basicPanel) {
-		initComponent();
-		this.bp = basicPanel;
-	}
-
 	public ClickedMenu(String menuName) {
-		this.menuName = menuName;
 		MenuDao dao = new MenuDao();
 		vo = dao.getMenuByName(menuName);
 		System.out.println(vo);
-		initComponent();
 
+		initComponent();
 	}
-//	public ClickedMenu(String id) {
-//		// TODO Auto-generated constructor stub
-//	}
+
+	public ClickedMenu(String menuName, MenuPanel mp) {
+		this.mp = mp;
+		MenuDao dao = new MenuDao();
+		vo = dao.getMenuByName(menuName);
+		System.out.println(vo);
+
+		initComponent();
+	}
 
 	private void initComponent() {
 		setTitle("메뉴 관리");
@@ -69,29 +67,29 @@ public class ClickedMenu extends JFrame {
 
 		// 메뉴이름
 		lblMenuName = new JLabel("메뉴 이름");
-		tfMenuName = new JTextField( vo.getMenuName() );
+		tfMenuName = new JTextField(vo.getMenuName());
 		gbAdd(lblMenuName, 0, 0, 1, 1);
 		gbAdd(tfMenuName, 0, 1, 1, 1);
 
 		// 가격
 		lblMenuPrice = new JLabel("가격");
-		tfMenuPrice = new JTextField();
+		tfMenuPrice = new JTextField(Integer.toString(vo.getPrice()));
 		gbAdd(lblMenuPrice, 0, 2, 1, 1);
 		gbAdd(tfMenuPrice, 0, 3, 1, 1);
 
 		// 카테고리
 		lblCat = new JLabel("카테고리 ");
-		CategoryDao dao = new CategoryDao();
 
-		JLabel lblCat = new JLabel("카테고리");
+		CategoryDao dao = new CategoryDao();
 		cat = dao.getCategoryList();
 
 		Vector<String> arr = new Vector<String>();
-		for (CategoryVo vo1 : cat) {
-			arr.add(vo1.getCategoryName());
+		for (CategoryVo vo : cat) {
+			arr.add(vo.getCategoryName());
 		}
-
 		cbCat = new JComboBox<String>(arr);
+		cbCat.setSelectedItem(dao.getCategoryById(vo.getCategoryID()).getCategoryName());
+
 		gbAdd(lblCat, 0, 4, 1, 1);
 		gbAdd(cbCat, 0, 5, 1, 1);
 
@@ -102,15 +100,16 @@ public class ClickedMenu extends JFrame {
 		btnUpdate = new JButton("수정");
 
 		// 이벤트 연결
+		btnCancel.addActionListener(e -> {
+			dispose();
+		});
 		btnDelete.addActionListener((e) -> {
 			System.out.println("삭제 버튼 클릭");
 			deleteMenu();
-			btnOnOff(true);
 		});
 		btnUpdate.addActionListener((e) -> {
 			System.out.println("수정 버튼 클릭");
 			updateMenu();
-			btnOnOff(true);
 		});
 
 		btnPanel.add(btnCancel);
@@ -119,6 +118,7 @@ public class ClickedMenu extends JFrame {
 		gbAdd(btnPanel, 0, 7, 1, 1);
 
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		setLocationRelativeTo(null);
 		setSize(350, 600);
 		setVisible(true);
 	}
@@ -134,52 +134,45 @@ public class ClickedMenu extends JFrame {
 
 	}
 
-	public static void main(String[] args) {
-		new ClickedMenu();
-
-	}
-
 	private void deleteMenu() {
-
-		int choice = JOptionPane.showConfirmDialog(null, menuName + "을(를) 삭제하시겠습니까?", "삭제확인",
+		int choice = JOptionPane.showConfirmDialog(null, vo.getMenuName() + "을(를) 삭제하시겠습니까?", "삭제확인",
 				JOptionPane.YES_NO_OPTION);
 		System.out.println(choice); // 예0 아니오1 x-1
 		String msg = "";
 		if (choice == 0) {
 			MenuDao dao = new MenuDao();
-			dao.deleteMenu(menuName);
-			msg = menuName + "(이)가 삭제되었습니다";
+			dao.deleteMenu(vo.getMenuName());
+			msg = vo.getMenuName() + "(이)가 삭제되었습니다";
 		} else if (choice == 1) {
-			msg = menuName + "(이)가 삭제되지 않았습니다.";
+			msg = vo.getMenuName() + "(이)가 삭제되지 않았습니다.";
 		} else {
 			msg = "취소를 클릭하였습니다.";
 		}
 		JOptionPane.showMessageDialog(null, msg, "삭제확인", JOptionPane.OK_OPTION);
-		this.dispose();
+
+		dispose();
 	}
 
 	private void updateMenu() {
 		MenuDao dao = new MenuDao();
 		CategoryDao cdao = new CategoryDao();
-		MenuVo mvo = dao.getMenuByName(menuName);
+		MenuVo mvo = dao.getMenuByName(vo.getMenuName());
 
 		String currentMenuName = mvo.getMenuName();
 		String menuName = tfMenuName.getText();
 		int price = Integer.parseInt(tfMenuPrice.getText());
 		int menuCat = cdao.getCategoryByName((String) cbCat.getSelectedItem()).getCategoryID();
-		// int menuCat = this.cbCat.getSelectedItem();
 
 		dao.updateMenu(currentMenuName, menuName, price, menuCat);
-//		cdao.updateCategory(
-//				클릭한 버튼의 현 카테고리String, 변경될 카테고리String );
-//		String currentCatName = cdao.getCategoryByName((String)cbCat.getSelectedItem()).getCategoryName();  
-//		String catName = (String)this.cbCat.getSelectedItem();
-//		cdao.updateCategory(currentCatName, catName);
-//		this.dispose();
+
+		dispose();
 	}
 
-	private void btnOnOff(boolean sw) {
-
+	@Override
+	public void dispose() {
+		// TODO Auto-generated method stub
+		super.dispose();
+		mp.viewMenuByCategoryId(vo.getCategoryID());
 	}
 
 }

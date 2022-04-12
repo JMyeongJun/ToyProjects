@@ -13,8 +13,8 @@ import javax.swing.JTextField;
 import model.CategoryDao;
 
 public class AddCat extends JFrame {
+	MenuPanel mp;
 
-	BasicPanel bp = null;
 	JButton btnOk, btnCancel;
 	JLabel lbl;
 	JTextField tfCatName;
@@ -28,9 +28,9 @@ public class AddCat extends JFrame {
 		initComponent();
 	}
 
-	public AddCat(BasicPanel basicPanel) {
-		initComponent();
-		this.bp = basicPanel;
+	public AddCat(MenuPanel mp) {
+		this();
+		this.mp = mp;
 	}
 
 	private void initComponent() {
@@ -58,7 +58,6 @@ public class AddCat extends JFrame {
 		btnOk.addActionListener((e) -> {
 			System.out.println("등록 버튼 클릭");
 			insertCat();
-			btnOnOff(true);
 		});
 
 		btnCancel.addActionListener((e) -> {
@@ -66,6 +65,7 @@ public class AddCat extends JFrame {
 		});
 
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		setLocationRelativeTo(null);
 		setSize(380, 400);
 		setVisible(true);
 	}
@@ -81,21 +81,12 @@ public class AddCat extends JFrame {
 
 	}
 
-	public static void main(String[] args) {
-		new AddCat();
-
-	}
-
 	private void insertCat() {
 		CategoryDao dao = new CategoryDao();
 		String categoryName = this.tfCatName.getText();
 		dao.insertCategory(categoryName);
-
-		this.dispose();
-	}
-
-	private void btnOnOff(boolean sw) {
-
+		dispose();
+		mp.viewCategory();
 	}
 
 }

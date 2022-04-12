@@ -6,28 +6,36 @@ import javax.swing.JPanel;
 // 메인 실행창
 public class MainFrame extends JFrame {
 
-	JPanel OrderPanel;
+	static JPanel mainPanel;
 
 	public MainFrame() {
 		init();
 	}
 
 	public void init() {
-		setTitle("MainFrame");
+		setTitle("카페 POS");
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setLocationRelativeTo(null);
-		
-		// new OrderPanel();부분 자기걸로 변경!!!!!!
-		OrderPanel = new MenuPanel();
-
-		add(OrderPanel);
-
-		setSize(1000, 700);
-		setVisible(true);
 	}
 
 	public static void main(String[] args) {
-		new MainFrame();
+		MainFrame mf = new MainFrame();
+
+		mainPanel = new HomePanel(mf);
+
+		mf.add(mainPanel);
+
+		mf.setSize(1000, 700);
+		mf.setVisible(true);
+	}
+
+	public void changePanel(JPanel panel) {
+		mainPanel = panel;
+		
+		getContentPane().removeAll();
+		getContentPane().add(mainPanel);
+		revalidate();
+		repaint();
 	}
 
 }

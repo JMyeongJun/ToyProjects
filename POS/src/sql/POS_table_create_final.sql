@@ -28,7 +28,7 @@ ALTER TABLE menu ADD CONSTRAINT menu__un UNIQUE ( menu_name );
 
 CREATE TABLE order_list (
     order_id    NUMBER NOT NULL,
-    menu_id     NUMBER(4) NOT NULL,
+    menu_id     NUMBER(4),
     quantity    NUMBER(4),
     total_price NUMBER(10)
 );
@@ -59,7 +59,8 @@ ALTER TABLE menu
 
 ALTER TABLE order_list
     ADD CONSTRAINT order_list_menu_fk FOREIGN KEY ( menu_id )
-        REFERENCES menu ( menu_id );
+        REFERENCES menu ( menu_id )
+        ON UPDATE SET NULL ON DELETE SET NULL;
 
 ALTER TABLE order_list
     ADD CONSTRAINT order_list_order_fk FOREIGN KEY ( order_id )

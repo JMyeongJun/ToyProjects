@@ -15,7 +15,9 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.table.DefaultTableModel;
 
 import model.MemberDao;
 import model.MemberVo;
@@ -24,17 +26,18 @@ public class MemberInsert extends JFrame implements ActionListener {
 	
 	// Field
 	MemberPanel memberPanel = null;
-	
-	String      id          =null;
+	String      id          = null;
 	
 	JFrame     jFrame;
 	JPanel     pan1;
 	JButton    btnInsert, btnCancel;
 	JLabel     lblName, lblTel;
 	JTextField txtName, txtTel;
+	JTable     jTable;
 	
 	GridBagLayout        gbl;
 	GridBagConstraints   gbc;
+	
 	
 	//생성자
 	public MemberInsert() {
@@ -48,7 +51,7 @@ public class MemberInsert extends JFrame implements ActionListener {
 	
 	public MemberInsert(String id, MemberPanel memberPanel) {
 		this(memberPanel);
-//		this.id = id;
+		this.id = id;
 	}
 
 	private void initComponent() {
@@ -77,37 +80,30 @@ public class MemberInsert extends JFrame implements ActionListener {
 		
 		lblName = new JLabel("이름 입력");
 		txtName = new JTextField(10);
-		txtName.setText("이름");
+		txtName.getText();
 		gbAdd( lblName, 0, 0, 1, 1);
 		gbAdd( txtName, 0, 1, 1, 1 );
 
-//		pan1.add(lblName);
-//		pan1.add(txtName);
-		
-		
 		lblTel = new JLabel("전화번호 입력");
 		txtTel  = new JTextField(10);
-		txtTel.setText("전화번호");
+		txtTel.getText();
 		gbAdd(lblTel,  0, 2, 1, 1);
 		gbAdd(txtTel, 0, 3, 1, 1 );
-		
-//		pan1.add(lblTel);
-//		pan1.add(txtTel);
 
 		// 버튼
-		JPanel pButton = new JPanel();
-		btnInsert = new JButton("취소");
-		btnCancel = new JButton("등록");
-		pan1.add( btnInsert );
+		btnCancel = new JButton("취소");
+		btnInsert = new JButton("등록");
 		pan1.add( btnCancel );
+		pan1.add( btnInsert );
 		gbAdd( pan1, 0,4,4,1);
 		
-		btnInsert.addActionListener( this );
-		btnCancel.addActionListener( this );
+		btnCancel.addActionListener(this);
+		btnInsert.addActionListener(this);
 
-		
 		setVisible(true);
 	}
+	
+	
 
 	// GridBagConstraints 설정 함수
 	private void gbAdd(JComponent c, int x, int y, int w, int h) {
@@ -124,22 +120,36 @@ public class MemberInsert extends JFrame implements ActionListener {
 	public static void main(String[] args) {
 		new MemberInsert();
 	}
-	
-	// 메소드
-	// 회원등록
+
+
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		MemberDao dao = new MemberDao();
+		MemberVo  vo  = getViewData();
 		
-		MemberDao dao     = new MemberDao();
-		MemberVo  voList  = getViewData();
-		
-		
+		switch( e.getActionCommand()) {
+		case "등록":
+			dao.insertMember( txtName.getText(), txtTel.getText() );
+			MemberPanel.jTableRefresh();
+			this.dispose();
+			break;
+			
+		case "취소":
+			clearviewData();
+			break;
+		}
 		
 	}
 
+	private void clearviewData() {
+		txtName.setText("");
+		txtTel.setText("");
+		txtName.setFocusable( true );	
+	}
+
 	private MemberVo getViewData() {
+		
 		return null;
 	}
-		
 
 }

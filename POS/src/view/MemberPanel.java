@@ -8,6 +8,8 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.Vector;
 
 import javax.swing.JButton;
@@ -19,17 +21,20 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
-public class MemberPanel extends BasicPanel implements ActionListener {
+import model.MemberDao;
+import model.MemberVo;
+
+public class MemberPanel extends BasicPanel 
+                          implements ActionListener, MouseListener {
 	
-	MemberInsert proc = null;
-	MemberUpdate proc2 = null;
 	
-	JFrame      jFrame;
 	JButton     btnInsert, btnUpdate;
 	JScrollPane pane;
-	JTable      jTable;
+	static JTable      jTable;
 	JLabel      lbl;
 
+	MemberInsert proc = null;
+	MemberUpdate proc2 = null;
 
 	
 	public MemberPanel() {
@@ -52,8 +57,10 @@ public class MemberPanel extends BasicPanel implements ActionListener {
 		side.add( btnInsert );
 		side.add( btnUpdate);
 		
+		// 버튼 기능 추가
 		btnInsert.addActionListener( this );
 		btnUpdate.addActionListener( this );
+		
 		
 		// 라벨 추가
 		
@@ -66,56 +73,138 @@ public class MemberPanel extends BasicPanel implements ActionListener {
 		top_bottom.add(lbl);
 		
 		// JTable 추가
-		
 		jTable   =   new JTable();
-		
 		jTable.setModel(
-				new DefaultTableModel( getDataList(), getColumnList() ) {
-					public boolean isCellEditable( int row, int column) {
-						return false;
+			new DefaultTableModel( getDataList(), getColumnList() ) {
+			public boolean isCellEditable( int row, int column) {
+			return false;
 						
 					}
 				}
-				);
+			);
 		pane = new JScrollPane( jTable );
 		bottom.setLayout(new BorderLayout());
 		bottom.add( pane,BorderLayout.CENTER );
 		
-	}
-	
-	
-	private Vector<? extends Vector> getDataList() {
-		
-		return null;
+		// 마우스 기능 추가
+		jTable.addMouseListener(this);
+		setVisible(true);
 	}
 
-	private Vector<?> getColumnList() {
+	// Table - 데이터(rows) 반환
+	   private static Vector<? extends Vector<String>> getDataList() {
+		  MemberDao dao = new MemberDao();
+		  Vector<MemberVo> voList =  dao.getMemberList();
+	      Vector<Vector<String>> list = new Vector<Vector<String>>();
+
+	      for (MemberVo vo : voList) {
+	         Vector<String> row = new Vector<String>();
+
+	         row.add(vo.getMemberName());
+	         row.add(vo.getPhoneNumber());
+	         row.add(Integer.toString(vo.getPoint()));
+
+	         list.add(row);
+	      }
+	      return list;
+	   }
+
+	private static Vector<?> getColumnList() {
 		Vector cols = new Vector();
 		cols.add("이름");
-		cols.add("휴대폰 번호");
-		cols.add("부유 포인트");
+		cols.add("전화번호");
+		cols.add("포인트");
 		return cols;
+		
+	}
+	
+	public static void main(String[] args) {
+		new MemberPanel();
+	}
+	
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		
+	switch(e.getActionCommand() ) {
+		case "회원등록" :			
+			if( proc != null ) {
+				proc.dispose();
+			}
+			proc = new MemberInsert();
+			
+			jTableRefresh();
+			break;
+		case "회원수정" :
+			if( proc2 != null ) {
+				proc2.dispose();
+			}
+			proc2 = new MemberUpdate();
+			break;
+		
+	
+	}
+}
+
+	public static void jTableRefresh() {
+		jTable.setModel(
+				new DefaultTableModel( getDataList(), getColumnList() ) {
+					@Override
+					public boolean isCellEditable(int row, int column ) {
+						return super.isCellEditable(row, column);
+					}
+				}
+				);
+		jTable.repaint();
 		
 	}
 
 	@Override
-	public void actionPerformed(ActionEvent e) {
-		JButton btn = (JButton) e.getSource();
-		if( e.getSource() == btnInsert ) {
-			System.out.println("회원등록");
-			if( proc != null )
-				proc.dispose();
-			proc = new MemberInsert( this );	
+	public void mouseClicked(MouseEvent e) {
+		// 마우스 더블 클릭
+		if(e.getClickCount() == 2) {
+
+		System.out.println( e );
+		int c = jTable.getSelectedColumn();
+		int r = jTable.getSelectedRow();
 		
-		}
-		if(e.getSource() == btnUpdate) {
-			System.out.println("회원수정");
-			if( proc2 != null )
-				proc2.dispose();
-			proc2 = new MemberUpdate( this );
-		}
+		String id     = (String) jTable.getValueAt(r,0);
+		String number = (String) jTable.getValueAt(r,1);
+		String point  = (String) jTable.getValueAt(r,2);
+		System.out.println(id);
+			
+		if( proc2 != null )
+			proc2.dispose();
+		proc2 = new MemberUpdate( id, number, point, this); 
 		
+//		if(e.getClickCount() ==1 ) {
+//
+//		}
+		} 
+
 	}
 
 
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}	
 }

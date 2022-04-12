@@ -12,15 +12,48 @@ public class SalesDao {
 		conn = DBConn.getConnection();
 	}
 	
-	// 
+	// 해당 날짜 사이 매출 조회
+	public Vector<SalesVo> getSalesList(String date1, String date2){
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String sql = "SELECT SALES_ID, ORDER_ID, USE_POINT, (SELECT SUM(TOTAL_PRICE) FROM ORDER_LIST WHERE ORDER_ID = S.ORDER_ID) SALES, "
+				+ "(SELECT ORDER_DATE FROM ORDERS WHERE ORDER_ID = S.ORDER_ID) ORDER_DATE, SALES_DATE, PAYMENT_METHOD "
+				+ "FROM SALES S "
+				+ "WHERE (SELECT ORDER_DATE FROM ORDERS WHERE ORDER_ID = S.ORDER_ID) BETWEEN TO_DATE(?, 'YYYY-MM-DD') AND TO_DATE(?, 'YYYY-MM-DD') + 1 "
+				+ "ORDER BY SALES_ID";
+
+		Vector<SalesVo> voList = null;
+
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, date1);
+			pstmt.setString(2, date2);
+			
+			rs = pstmt.executeQuery();
+
+			voList = new Vector<SalesVo>();
+
+			while (rs.next()) {
+				SalesVo vo = new SalesVo(Integer.parseInt(rs.getString("SALES_ID")),
+						Integer.parseInt(rs.getString("ORDER_ID")),
+						Integer.parseInt(rs.getString("USE_POINT")),
+						Integer.parseInt(rs.getString("SALES")),
+						rs.getString("ORDER_DATE"),
+						rs.getString("SALES_DATE"),
+						rs.getString("PAYMENT_METHOD"));
+				voList.add(vo);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return voList;
+	}
+	
+	// 모든 매출 조회
 	public Vector<SalesVo> getSalesList(){
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
-		/*
-		 * SELECT SALES_ID, ORDER_ID, PAYMENT_METHOD, USE_POINT, 
-    	(SELECT SUM(TOTAL_PRICE) FROM ORDER_LIST WHERE ORDER_ID = S.ORDER_ID) SALES, SALES_DATE 
-		FROM SALES S;
-		 */
 		String sql = "SELECT SALES_ID, ORDER_ID, USE_POINT, (SELECT SUM(TOTAL_PRICE) FROM ORDER_LIST WHERE ORDER_ID = S.ORDER_ID) SALES, "
 				+ "(SELECT ORDER_DATE FROM ORDERS WHERE ORDER_ID = S.ORDER_ID) ORDER_DATE, SALES_DATE, PAYMENT_METHOD "
 				+ "FROM SALES S ORDER BY SALES_ID";
@@ -50,6 +83,7 @@ public class SalesDao {
 		return voList;
 	}
 	
+	// 매출 기록 - OrderDao : insertOrder() 하고 바로 할것
 	public void insertSales(String paymentMethod, int usePoint) {
 		PreparedStatement pstmt = null;
 		PreparedStatement pstmt2 = null;

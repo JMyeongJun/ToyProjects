@@ -101,9 +101,13 @@ public class DaoTest {
 				break;
 			case 5:
 				System.out.println("판매");
-				sdao.insertSales("카드", 100);
+//				sdao.insertSales("카드", 100);
 				
 				for(SalesVo vo : sdao.getSalesList()) {
+					System.out.println(vo);
+				}
+				System.out.println("----------------------------------------");
+				for(SalesVo vo : sdao.getSalesList("2022-04-10", "2022-04-10")) {
 					System.out.println(vo);
 				}
 				break;

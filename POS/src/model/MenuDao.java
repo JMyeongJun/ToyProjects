@@ -39,6 +39,33 @@ public class MenuDao {
 		return vo;
 	}
 	
+	// 이름으로 메뉴 정보 가져오기
+		public MenuVo getMenuByName(String menuName) {
+			PreparedStatement pstmt = null;
+			ResultSet rs = null;
+
+			String sql = "SELECT * FROM MENU WHERE MENU_NAME = ?";
+
+			MenuVo vo = null;
+			
+			try {
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setString(1, menuName);
+				rs = pstmt.executeQuery();
+
+				if (rs.next()) {
+					vo = new MenuVo(Integer.parseInt(rs.getString("MENU_ID")),
+							rs.getString("MENU_NAME"),
+							Integer.parseInt(rs.getString("PRICE")),
+							Integer.parseInt(rs.getString("CATEGORY_ID")));
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+			return vo;
+		}
+	
 	// 전체 메뉴 리스트 가져오기
 	public Vector<MenuVo> getMenuList() {
 		PreparedStatement pstmt = null;

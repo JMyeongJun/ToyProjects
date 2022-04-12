@@ -1,7 +1,11 @@
 package view;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -9,7 +13,10 @@ import java.awt.event.MouseListener;
 import java.util.Vector;
 
 import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
@@ -30,6 +37,7 @@ public class MemberPanel extends BasicPanel implements ActionListener, MouseList
 
 	public MemberPanel() {
 		initComponent();
+
 	}
 	
 	public MemberPanel(MainFrame mf) {
@@ -41,8 +49,6 @@ public class MemberPanel extends BasicPanel implements ActionListener, MouseList
 	}
 
 	private void initComponent() {
-		subTitle.setFont(new Font("본고딕", Font.BOLD, 50));
-		subTitle.setText("회원 관리");
 
 		subTitle.setText("회원관리");
 
@@ -72,7 +78,6 @@ public class MemberPanel extends BasicPanel implements ActionListener, MouseList
 		jTable.setModel(new DefaultTableModel(getDataList(), getColumnList()) {
 			public boolean isCellEditable(int row, int column) {
 				return false;
-
 			}
 		});
 		pane = new JScrollPane(jTable);
@@ -84,7 +89,6 @@ public class MemberPanel extends BasicPanel implements ActionListener, MouseList
 		btnUpdate.addActionListener(this);
 
 		jTable.addMouseListener(this);
-//      btnUpdate.addMouseListener(this);
 
 		setVisible(true);
 	}
@@ -108,16 +112,11 @@ public class MemberPanel extends BasicPanel implements ActionListener, MouseList
 	}
 
 	private static Vector<?> getColumnList() {
-		Vector cols = new Vector();
+		Vector<String> cols = new Vector<String>();
 		cols.add("이름");
 		cols.add("전화번호");
 		cols.add("포인트");
 		return cols;
-
-	}
-
-	public static void main(String[] args) {
-		new MemberPanel();
 	}
 
 	// button event 연결 click
@@ -154,7 +153,7 @@ public class MemberPanel extends BasicPanel implements ActionListener, MouseList
 		jTable.setModel(new DefaultTableModel(getDataList(), getColumnList()) {
 			@Override
 			public boolean isCellEditable(int row, int column) {
-				return super.isCellEditable(row, column);
+				return false;
 			}
 		});
 		jTable.repaint();
@@ -199,8 +198,8 @@ public class MemberPanel extends BasicPanel implements ActionListener, MouseList
 	}
 
 	@Override
-   public void mouseExited(MouseEvent e) {
-      // TODO Auto-generated method stub
-      
-   }
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
 }

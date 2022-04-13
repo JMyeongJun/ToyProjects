@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,10 +13,12 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.Vector;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -29,7 +32,7 @@ public class MemberPanel extends BasicPanel implements ActionListener, MouseList
 	
 	JButton btnInsert, btnUpdate;
 	JScrollPane pane;
-	static JTable jTable;
+	static JTable table;
 	JLabel lbl;
 
 	MemberInsert proc = null;
@@ -51,14 +54,18 @@ public class MemberPanel extends BasicPanel implements ActionListener, MouseList
 	private void initComponent() {
 		subTitle.setText("회원관리");
 
-		side.setLayout(null);
 		// 버튼 등록
 		btnInsert = new JButton("회원등록");
+		btnInsert.setFont(basicFont(20, Font.BOLD));
 		btnUpdate = new JButton("회원수정");
-
-		btnInsert.setBounds(100, 450, 100, 30);
-		btnUpdate.setBounds(100, 550, 100, 30);
-
+		btnUpdate.setFont(basicFont(20, Font.BOLD));
+		side.setLayout(new GridLayout(0, 1, 30, 30));
+		side.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+		for(int i = 0; i < 5; i++) {
+			JPanel emptyPanel = new JPanel();
+			emptyPanel.setBackground(colorSide);
+			side.add(emptyPanel);
+		}
 		side.add(btnInsert);
 		side.add(btnUpdate);
 
@@ -68,18 +75,22 @@ public class MemberPanel extends BasicPanel implements ActionListener, MouseList
 
 		lbl = new JLabel("회원 목록");
 		lbl.setBounds(10, -10, 150, 100);
-		lbl.setFont(new Font("Serif", Font.BOLD, 10));
+		lbl.setFont(basicFont(30, Font.BOLD));
 		lbl.setFont(lbl.getFont().deriveFont(25.0f));
 		top_bottom.add(lbl);
 
 		// JTable 추가
-		jTable = new JTable();
-		jTable.setModel(new DefaultTableModel(getDataList(), getColumnList()) {
+		table = new JTable();
+		table.setRowHeight(30);
+		table.setFont(basicFont(20, Font.PLAIN));
+		
+		
+		table.setModel(new DefaultTableModel(getDataList(), getColumnList()) {
 			public boolean isCellEditable(int row, int column) {
 				return false;
 			}
 		});
-		pane = new JScrollPane(jTable);
+		pane = new JScrollPane(table);
 		bottom.setLayout(new BorderLayout());
 		bottom.add(pane, BorderLayout.CENTER);
 
@@ -87,7 +98,7 @@ public class MemberPanel extends BasicPanel implements ActionListener, MouseList
 		btnInsert.addActionListener(this);
 		btnUpdate.addActionListener(this);
 
-		jTable.addMouseListener(this);
+		table.addMouseListener(this);
 
 		setVisible(true);
 	}
@@ -133,12 +144,16 @@ public class MemberPanel extends BasicPanel implements ActionListener, MouseList
 			break;
 		case "회원수정":
 			System.out.println(e);
-			int c = jTable.getSelectedColumn();
-			int r = jTable.getSelectedRow();
+			int r = table.getSelectedRow();
 
-			String id = (String) jTable.getValueAt(r, 0);
-			String number = (String) jTable.getValueAt(r, 1);
-			String point = (String) jTable.getValueAt(r, 2);
+			if(r < 0) {
+				JOptionPane.showMessageDialog(null, "수정할 회원을 클릭해주세요.", "확인", JOptionPane.WARNING_MESSAGE);
+				return;
+			}
+			
+			String id = (String) table.getValueAt(r, 0);
+			String number = (String) table.getValueAt(r, 1);
+			String point = (String) table.getValueAt(r, 2);
 			System.out.println(id);
 
 			if (proc2 != null)
@@ -149,13 +164,13 @@ public class MemberPanel extends BasicPanel implements ActionListener, MouseList
 	}
 
 	public static void jTableRefresh() {
-		jTable.setModel(new DefaultTableModel(getDataList(), getColumnList()) {
+		table.setModel(new DefaultTableModel(getDataList(), getColumnList()) {
 			@Override
 			public boolean isCellEditable(int row, int column) {
 				return false;
 			}
 		});
-		jTable.repaint();
+		table.repaint();
 	}
 
 	@Override
@@ -164,12 +179,12 @@ public class MemberPanel extends BasicPanel implements ActionListener, MouseList
 		if (e.getClickCount() == 2) {
 
 			System.out.println(e);
-			int c = jTable.getSelectedColumn();
-			int r = jTable.getSelectedRow();
+			int c = table.getSelectedColumn();
+			int r = table.getSelectedRow();
 
-			String id = (String) jTable.getValueAt(r, 0);
-			String number = (String) jTable.getValueAt(r, 1);
-			String point = (String) jTable.getValueAt(r, 2);
+			String id = (String) table.getValueAt(r, 0);
+			String number = (String) table.getValueAt(r, 1);
+			String point = (String) table.getValueAt(r, 2);
 			System.out.println(id);
 
 			if (proc2 != null)

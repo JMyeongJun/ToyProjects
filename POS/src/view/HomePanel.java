@@ -26,19 +26,30 @@ public class HomePanel extends JPanel implements ActionListener {
 	}
 
 	private void initcomponent() {
-		gb = new GridBagLayout();
-		gbc = new GridBagConstraints();
-		gbc.fill = GridBagConstraints.BOTH;
-
-		setLayout(gb);
-		setBackground(Color.white);
-
 		lblTitle = new JLabel("pos");
 		btnOrder = new JButton("주문");
 		btnMember = new JButton("회원 관리");
 		btnMenu = new JButton("메뉴 관리");
 		btnSales = new JButton("매출 조회");
 
+		lblTitle.setFont(new Font("본고딕", Font.BOLD, 40));
+		btnDesign(btnOrder);
+		btnDesign(btnMember);
+		btnDesign(btnMenu);
+		btnDesign(btnSales);
+		
+		btnOrder.addActionListener(this);
+		btnMember.addActionListener(this);
+		btnMenu.addActionListener(this);
+		btnSales.addActionListener(this);
+		
+		gb = new GridBagLayout();
+		gbc = new GridBagConstraints();
+		gbc.fill = GridBagConstraints.BOTH;
+
+		setLayout(gb);
+		setBackground(Color.white);
+		
 		gbc.weightx = 1.0;
 		gbc.weighty = 1.0;
 		gbc.insets = new Insets(5, 55, 0, 0); // 상,좌,하,우
@@ -51,22 +62,9 @@ public class HomePanel extends JPanel implements ActionListener {
 		gbAdd(btnMember, 1, 2, 1, 1);
 		gbAdd(btnMenu, 1, 3, 1, 1);
 		gbAdd(btnSales, 1, 4, 1, 1);
-
-		btnOrder.addActionListener(this);
-		btnMember.addActionListener(this);
-		btnMenu.addActionListener(this);
-		btnSales.addActionListener(this);
-
-		lblTitle.setFont(new Font("본고딕", Font.BOLD, 40));
-		btnDesign(btnOrder);
-		btnDesign(btnMember);
-		btnDesign(btnMenu);
-		btnDesign(btnSales);
-
 	}
 
 	private void gbAdd(JComponent c, int x, int y, int w, int h) {
-
 		gbc.gridx = x;
 		gbc.gridy = y;
 		gbc.gridwidth = w;
@@ -98,7 +96,7 @@ public class HomePanel extends JPanel implements ActionListener {
 
 	private void btnDesign(JButton btn) {
 		Color btnBackCol = new Color(52, 152, 219);
-		Color btnForeCol = new Color(255, 255, 255);
+		Color btnForeCol = Color.WHITE;
 		Font btnFont = new Font("본고딕", Font.BOLD, 40);
 
 		btn.setBackground(btnBackCol);

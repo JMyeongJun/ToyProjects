@@ -68,16 +68,26 @@ public class PayPanel extends BasicPanel {
 		side.setLayout(gbl);
 
 		labelTxtTotal   = new JLabel("총액");
+		labelTxtTotal.setFont(basicFont(20));
 		labelTotalPrice = new JLabel(Integer.toString(getTotalPrice()));
+		labelTotalPrice.setFont(basicFont(20));
 		labelTxtPoint   = new JLabel("포인트 사용");
+		labelTxtPoint.setFont(basicFont(20));
 		btnSavePoint    = new JButton("적립");
+		btnSavePoint.setFont(basicFont(20));
 		labelUsePoint   = new JLabel("0");
+		labelUsePoint.setFont(basicFont(20));
 		labelTxtPay     = new JLabel("결제 금액");
+		labelTxtPay.setFont(basicFont(25));
 		labelPayment    = new JLabel(Integer
 				.toString( Integer.parseInt( labelTotalPrice.getText() ) - Integer.parseInt( labelUsePoint.getText() ))); 
+		labelPayment.setFont(basicFont(30));
 		btnCash         = new JButton("현금 결제");
+		btnCash.setFont(basicFont(20));
 		btnCard         = new JButton("카드 결제");
+		btnCard.setFont(basicFont(20));
 		btnUsePoint     = new JButton("포인트 사용");
+		btnUsePoint.setFont(basicFont(20));
 
 
 		gbc.weighty = 1.0; 

@@ -24,6 +24,11 @@ public class BasicPanel extends JPanel {
 
 	private GridBagLayout gbl;
 	private GridBagConstraints gbc;
+	
+	public static final Color colorBottom = new Color(224, 224, 224);
+	public static final Color colorSide = new Color(237, 254, 188);
+	public static final Color colorMenu = new Color(100, 100, 100);
+	public static final Color colorCategory = new Color(52, 152, 219);
 
 	public BasicPanel() {
 		initcomponents(2.3);
@@ -61,8 +66,8 @@ public class BasicPanel extends JPanel {
 
 		// 색상 설정
 		top.setBackground(Color.white);
-		bottom.setBackground(new Color(224, 224, 224));
-		side.setBackground(new Color(237, 254, 188));
+		bottom.setBackground(colorBottom);
+		side.setBackground(colorSide);
 
 		// 탑 패널 내부 설정(top_top, top_bottom 패널)
 		top.setLayout(new GridLayout(2, 1));
@@ -78,7 +83,10 @@ public class BasicPanel extends JPanel {
 		top_bottom.setBackground(Color.white);
 		
 		// 이전 버튼, 부제 라벨 초기화
-		btnPrev = new JButton("<PREV");
+		btnPrev = new JButton("<");
+		btnPrev.setFont(basicFont(20, Font.BOLD));
+		btnPrev.setBackground(Color.white);
+		btnPrev.setBorderPainted(false);
 		subTitle = new JLabel("subTitle");
 		subTitle.setFont(new Font("Source Han Sans", Font.BOLD, 50));
 		
@@ -97,5 +105,13 @@ public class BasicPanel extends JPanel {
 		gbc.gridheight = h;
 		gbl.setConstraints(c, gbc);
 		add(c);
+	}
+	
+	public Font basicFont(int size, int bold) {
+		return new Font("Source Han Sans", bold, size);
+	}
+	
+	public Font basicFont(int size) {
+		return basicFont(size, Font.BOLD);
 	}
 }

@@ -92,18 +92,17 @@ public class MemberUpdate extends JFrame implements ActionListener {
 		lblPoint = new JLabel("보유 포인트");
 		txtPoint = new JTextField(10);
 		txtPoint.setText("");
-		txtPoint.setEnabled(false);
+		txtPoint.setEditable(false);
 		gbAdd(lblPoint, 0, 4, 1, 1);
 		gbAdd(txtPoint, 0, 5, 3, 1);
 
 		// 버튼
-		JPanel pButton = new JPanel();
 		btnCancel = new JButton("취소");
 		btnUpdate = new JButton("수정");
 		btnDelete = new JButton("삭제");
 		gbAdd(btnCancel, 0, 6, 1, 1);
-		gbAdd(btnUpdate, 1, 6, 1, 1);
-		gbAdd(btnDelete, 2, 6, 1, 1);
+		gbAdd(btnDelete, 1, 6, 1, 1);
+		gbAdd(btnUpdate, 2, 6, 1, 1);
 
 		btnCancel.addActionListener(this);
 		btnUpdate.addActionListener(this);

@@ -25,7 +25,7 @@ public class MainFrame extends JFrame {
 
 		mf.add(mainPanel);
 
-		mf.setSize(1000, 700);
+		mf.setSize(1100, 700);
 		mf.setVisible(true);
 	}
 

@@ -11,7 +11,6 @@ import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -37,8 +36,6 @@ public class MenuPanel extends BasicPanel {
 	AddMenu adm = null;
 	AddCat adc = null;
 	ClickedMenu ckm = null;
-	GridLayout gl;
-	
 
 	public MenuPanel() {
 		initComponent();
@@ -56,12 +53,11 @@ public class MenuPanel extends BasicPanel {
 	private void initComponent() {
 		subTitle.setText("메뉴 관리");
 		
-		gl = new GridLayout();
-		
 		// top_bottom Layout 설정
-		top_bottom.setLayout(gl);
+		top_bottom.setLayout(new GridLayout(1, 0, 10, 10));
 		top_bottom.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
 		jsc = new JScrollPane(top_bottom);
+		jsc.setBorder(BorderFactory.createEmptyBorder());
 		
 		top.remove(top_bottom);
 		top.add(jsc);
@@ -71,8 +67,8 @@ public class MenuPanel extends BasicPanel {
 		side.setBorder(BorderFactory.createEmptyBorder(20, 50, 50, 50));
 		
 		// bottom 패널
-		bottom.setLayout(new GridLayout(0,5,4,4));
-		bottom.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+		bottom.setLayout(new GridLayout(0,5,10,10));
+		bottom.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 		
 
 		btnAddCat = new JButton("+카테고리");
@@ -105,6 +101,7 @@ public class MenuPanel extends BasicPanel {
 		});
 	}
 
+	// 카테고리 버튼 생성
 	public void viewCategory() {
 		top_bottom.removeAll();
 
@@ -116,10 +113,9 @@ public class MenuPanel extends BasicPanel {
 		}
 		for (JButton jbtn : catButton) {
 			jbtn.addActionListener(new CategoryAction());
-			jbtn.setPreferredSize(new Dimension(45,28));
-			jbtn.setBackground   (new Color(52, 152, 219));
-			jbtn.setForeground   (new Color(255,255,255));
-			jbtn.setFont         (new Font("본고딕", Font.BOLD, 12));
+			jbtn.setBackground   (colorCategory);
+			jbtn.setForeground   (Color.WHITE);
+			jbtn.setFont         (basicFont(20, Font.BOLD));
 			top_bottom.add(jbtn);
 		}
 
@@ -138,13 +134,13 @@ public class MenuPanel extends BasicPanel {
 
 		menuButton = new Vector<JButton>();
 		for (MenuVo vo : menuList) {
-			menuButton.add(new JButton(vo.getMenuName() + " " + vo.getPrice()));
+			menuButton.add(new JButton(vo.getMenuName()));
 		}
 
 		for (JButton mbtn : menuButton) {
-			mbtn.setBackground   (new Color(100,100,100));
-			mbtn.setForeground   (new Color(255,255,255));
-			mbtn.setFont         (new Font("본고딕", Font.BOLD, 20));
+			mbtn.setBackground   (colorMenu);
+			mbtn.setForeground   (Color.WHITE);
+			mbtn.setFont         (basicFont(20, Font.BOLD));
 			mbtn.addActionListener(new MenuAction());
 			bottom.add(mbtn);
 		}
@@ -155,7 +151,9 @@ public class MenuPanel extends BasicPanel {
 	
 	public void spacePanel(JPanel panel) {
 		for(int i = panel.getComponentCount(); i < 15; i++) {
-			panel.add(new JPanel());
+			JPanel emptyPanel = new JPanel();
+			emptyPanel.setBackground(colorBottom);
+			panel.add(emptyPanel);
 		}
 	}
 

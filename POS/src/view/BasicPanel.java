@@ -2,6 +2,7 @@ package view;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -73,12 +74,13 @@ public class BasicPanel extends JPanel {
 		// top_top 패널 마진값 5,5,5,5 설정(위, 왼, 아, 오)
 		top_top.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
 		
-//		top_top.setBackground(Color.white); // top 패널 구분하기 위해 잠시 색상 꺼놓음
+		top_top.setBackground(Color.white); // top 패널 구분하기 위해 잠시 색상 꺼놓음
 		top_bottom.setBackground(Color.white);
 		
 		// 이전 버튼, 부제 라벨 초기화
 		btnPrev = new JButton("<PREV");
 		subTitle = new JLabel("subTitle");
+		subTitle.setFont(new Font("Source Han Sans", Font.BOLD, 50));
 		
 		top_top.add(btnPrev, BorderLayout.WEST);
 		top_top.add(subTitle, BorderLayout.CENTER);

@@ -11,11 +11,6 @@ import java.awt.Insets;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.Locale;
 import java.util.Vector;
 
@@ -39,22 +34,26 @@ import com.raven.datechooser.DateChooser;
 import model.SalesDao;
 import model.SalesVo;
 
-public class SalesPanel extends BasicPanel implements ActionListener, MouseListener {
-
+public class SalesPanel extends BasicPanel implements ActionListener {
+	MainFrame mf;
+	
 	JPanel bottom_bottom;
 	JButton btnPrev, btnLookup, btnToExcel;
 	JLabel lbl_Cash, lbl_Card, lbl_All, lbl_Order_List, lbl_Order_Number, lbl_Order_Date, lbl_P;
 	JScrollPane scpane;
-	JTable table, table_Order;
+	static JTable table, table_Order;
 	JFrame frame;
 
 	GridBagLayout gbl;
 	GridBagConstraints gbc;
+	private DefaultTableModel model;
 	private JTable table2;
 	private final DateChooser date1 = new DateChooser();
 	private final DateChooser date2 = new DateChooser();
 	private JTextField textDate1;
 	private JTextField textDate2;
+
+	SalesDao dao = new SalesDao();
 
 	public SalesPanel() {
 		date2.setDateFormat("yyyy-MM-dd");
@@ -95,12 +94,17 @@ public class SalesPanel extends BasicPanel implements ActionListener, MouseListe
 		gbc_textDate2.gridy = 1;
 		top_bottom.add(textDate2, gbc_textDate2);
 		initComponent();
-
+	}
+	
+	public SalesPanel(MainFrame mf) {
+		this();
+		this.mf = mf;
+		super.btnPrev.addActionListener(e -> {
+			mf.changePanel(new HomePanel(mf));
+		});
 	}
 
 	private void initComponent() {
-
-		btnPrev = new JButton("이전");
 		btnLookup = new JButton("조회");
 		btnToExcel = new JButton("엑셀 저장");
 
@@ -112,15 +116,11 @@ public class SalesPanel extends BasicPanel implements ActionListener, MouseListe
 
 		// JTable
 		table = new JTable();
+		tableRefresh(table);
 		table.setForeground(Color.WHITE);
 		table.setBackground(Color.BLACK);
 		table.setFont(new Font("굴림", Font.PLAIN, 12));
 
-		table.setModel(new DefaultTableModel(getDataList(), getColumnList()) {
-			public boolean isCellEditable(int row, int column) {
-				return false;
-			}
-		});
 		DefaultTableCellRenderer c = new DefaultTableCellRenderer();
 		TableColumnModel c2 = table.getColumnModel();
 		for (int i = 0; i < c2.getColumnCount(); i++) {
@@ -178,28 +178,19 @@ public class SalesPanel extends BasicPanel implements ActionListener, MouseListe
 		lbl_Order_List = new JLabel("주문 내역");
 		lbl_Order_List.setFont(new Font("굴림", Font.PLAIN, 26));
 		GridBagConstraints gbc_lbl_Order_List = new GridBagConstraints();
-		gbc_lbl_Order_List.anchor = GridBagConstraints.WEST;
-		gbc_lbl_Order_List.fill = GridBagConstraints.VERTICAL;
-		gbc_lbl_Order_List.insets = new Insets(0, 1, 3, 3);
 		side.add(lbl_Order_List, gbc_lbl_Order_List);
 
 		lbl_Order_Number = new JLabel("주문 번호 : ");
 		GridBagConstraints gbc_lbl_Order_Number = new GridBagConstraints();
-		gbc_lbl_Order_Number.anchor = GridBagConstraints.NORTHWEST;
-		gbc_lbl_Order_Number.insets = new Insets(0, 2, 3, 5);
 		side.add(lbl_Order_Number, gbc_lbl_Order_Number);
 
 		lbl_Order_Date = new JLabel("주문 일자 : ");
 		GridBagConstraints gbc_lbl_Order_Date = new GridBagConstraints();
-		gbc_lbl_Order_Date.anchor = GridBagConstraints.NORTHWEST;
-		gbc_lbl_Order_Date.insets = new Insets(0, 4, 5, 5);
 		side.add(lbl_Order_Date, gbc_lbl_Order_Date);
 
 		lbl_P = new JLabel("결제 금액");
 		lbl_P.setFont(new Font("굴림", Font.PLAIN, 24));
 		GridBagConstraints gbc_lbl_P = new GridBagConstraints();
-		gbc_lbl_P.insets = new Insets(0, 0, 5, 5);
-		gbc_lbl_P.anchor = GridBagConstraints.NORTHWEST;
 		side.add(lbl_P, gbc_lbl_P);
 
 		// side table
@@ -209,7 +200,7 @@ public class SalesPanel extends BasicPanel implements ActionListener, MouseListe
 
 		DefaultTableModel DTM = (DefaultTableModel) table_Order.getModel();
 
-		DefaultTableCellRenderer center = new DefaultTableCellRenderer(); // 가운데정렬
+		DefaultTableCellRenderer center = new DefaultTableCellRenderer();
 		center.setHorizontalAlignment(SwingConstants.CENTER);
 		TableColumnModel center2 = table_Order.getColumnModel();
 		for (int i = 0; i < center2.getColumnCount(); i++) {
@@ -218,42 +209,64 @@ public class SalesPanel extends BasicPanel implements ActionListener, MouseListe
 			gbc.fill = GridBagConstraints.NONE;
 
 		}
+		
+		bottom.add(table);
 
 	}
 
-	private Vector<? extends Vector> getDataList() {
+	// 테이블 새로고침
+	public static void tableRefresh(JTable table) {
+		tableRefresh(table, "");
+	}
 
+	// 테이블 새로고침 - 날짜 조회
+	private static void tableRefresh(JTable table, String searchData) {
 		SalesDao dao = new SalesDao();
-		Vector list = dao.getSalesList();
+		table.setModel(new DefaultTableModel(getDataList(dao.getSalesList()), getColumnList()) {
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				return false;
+			}
 
-		return list;
-
+		});
+		table.getColumnModel().getColumn(4).setPreferredWidth(100);
+		table.repaint();
 	}
 
-	private Vector<?> getColumnList() {
-		Vector<String> cols = new Vector<>();
+	// Row
+	private static Vector<? extends Vector<String>> getDataList(Vector<SalesVo> voList) {
+		Vector<Vector<String>> list = new Vector<Vector<String>>();
+
+		for (SalesVo vo : voList) {
+			Vector<String> row = new Vector<String>();
+
+			row.add(String.valueOf(vo.getOrderId())); // 주문번호
+			row.add(vo.getOrderDate()); // 주문일자
+			row.add(vo.getPaymentMethod()); // 결제수단
+			row.add(String.valueOf(vo.getSales())); // 결제 금액
+			row.add(String.valueOf(vo.getUsePoint())); // 포인트사용
+			row.add(String.valueOf(vo.getSales() + vo.getUsePoint())); // 매출
+
+			list.add(row);
+		}
+		return list;
+	}
+
+	// column
+	public static Vector<?> getColumnList() {
+		Vector<String> cols = new Vector<String>();
 		cols.add("주문번호");
 		cols.add("주문일자");
 		cols.add("결제수단");
 		cols.add("결제금액");
 		cols.add("포인트사용");
 		cols.add("매출");
-
 		return cols;
 	}
 
-	public static void main(String[] args) {
-
-		new SalesPanel();
-
-		Date date = new Date();
-		Date date1 = new Date(System.currentTimeMillis());
-
-		SimpleDateFormat fmt;
-		fmt = new SimpleDateFormat("yyyy-MM-dd");
-
-		Calendar cal = Calendar.getInstance();
-
+	// 테이블 getter
+	public static JTable getTable() {
+		return table;
 	}
 
 	private void gbAdd(JComponent c, int x, int y, int w, int h) {
@@ -265,41 +278,35 @@ public class SalesPanel extends BasicPanel implements ActionListener, MouseListe
 		gbl.setConstraints(c, gbc);
 	}
 
-	@Override
-	public void mouseClicked(MouseEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
-
-	}
+	// salesId, orderId usePoint sales orderDate
+	// salesDate paymentMethod
+	/*
+	 * public void bottomView() { Vector<SalesVo> list = dao.getSalesList();
+	 * String[] columnName = { "주문번호", "주문일자", "결제수단", "결제금액", "포인트사용", "매출"};
+	 * String[][] rowData = new String[list.size()][columnName.length]; for (int
+	 * row=0; row<rowData.length; row++) { rowData[row][0] =
+	 * Integer.toString(list.get(row).getOrderId()); rowData[row][1] =
+	 * list.get(row).getOrderDate(); rowData[row][2] =
+	 * list.get(row).getPaymentMethod(); rowData[row][3] = null; rowData[row][4] =
+	 * Integer.toString(list.get(row).getUsePoint()); rowData[row][5] =
+	 * Integer.toString(list.get(row).getSales());
+	 * 
+	 * }
+	 * 
+	 * model = new DefaultTableModel(rowData, columnName); table = new
+	 * JTable(model); scpane = new JScrollPane( table );
+	 * scpane.setVerticalScrollBarPolicy(ScrollPaneConstants.
+	 * VERTICAL_SCROLLBAR_ALWAYS); bottom.add( scpane,BorderLayout.NORTH );
+	 * bottom.setLayout(new GridLayout(2, 0, 0, 0));
+	 * 
+	 */
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		switch (e.getActionCommand()) {
 		case "조회":
 			System.out.println("조회 누름");
+
 			break;
 		case "엑셀 저장":
 			System.out.println("엑셀 저장 누름");

@@ -49,7 +49,6 @@ public class MemberPanel extends BasicPanel implements ActionListener, MouseList
 	}
 
 	private void initComponent() {
-
 		subTitle.setText("회원관리");
 
 		side.setLayout(null);

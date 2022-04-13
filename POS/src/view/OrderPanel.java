@@ -52,6 +52,7 @@ public class OrderPanel extends BasicPanel implements ActionListener, MouseListe
 	}
 
 	private void initComponent() {
+		subTitle.setText("주문");
 //레이아웃 설정-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------		
 //top_bottom 설정
 		gb = new GridBagLayout();
@@ -70,7 +71,6 @@ public class OrderPanel extends BasicPanel implements ActionListener, MouseListe
 		viewBasic();
 		viewSide(); // side패널
 
-		subTitle.setFont(new Font("본고딕", Font.BOLD, 50));
 		btnPrev.setBackground(new Color(230, 230, 230));
 //		Color btnCate_col = new Color(52, 152, 219);
 //		Color btn_menu_col = new Color(94, 94, 94);

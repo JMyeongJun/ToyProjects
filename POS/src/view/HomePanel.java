@@ -89,6 +89,7 @@ public class HomePanel extends JPanel implements ActionListener {
 			mf.changePanel(new MenuPanel(mf));
 			break;
 		case "매출 조회":
+			mf.changePanel(new SalesPanel(mf));
 			break;
 		default:
 			break;

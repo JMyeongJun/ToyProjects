@@ -60,7 +60,8 @@ ALTER TABLE menu
 ALTER TABLE order_list
     ADD CONSTRAINT order_list_menu_fk FOREIGN KEY ( menu_id )
         REFERENCES menu ( menu_id )
-        ON DELETE SET NULL;
+        ON DELETE SET NULL
+        ON UPDATE SET NULL;
 
 ALTER TABLE order_list
     ADD CONSTRAINT order_list_order_fk FOREIGN KEY ( order_id )
@@ -68,7 +69,9 @@ ALTER TABLE order_list
 
 ALTER TABLE orders
     ADD CONSTRAINT order_members_fk FOREIGN KEY ( phone_number )
-        REFERENCES members ( phone_number );
+        REFERENCES members ( phone_number )
+        ON DELETE SET NULL
+        ON UPDATE CASCADE;
 
 ALTER TABLE sales
     ADD CONSTRAINT sales_order_fk FOREIGN KEY ( order_id )

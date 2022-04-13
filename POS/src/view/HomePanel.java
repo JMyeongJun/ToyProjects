@@ -96,14 +96,14 @@ public class HomePanel extends JPanel implements ActionListener {
 		}
 	}
 
-	private void btnDesign(JButton b) {
+	private void btnDesign(JButton btn) {
 		Color btnBackCol = new Color(52, 152, 219);
 		Color btnForeCol = new Color(255, 255, 255);
 		Font btnFont = new Font("본고딕", Font.BOLD, 40);
 
-		b.setBackground(btnBackCol);
-		b.setForeground(btnForeCol);
-		b.setFont(btnFont);
+		btn.setBackground(btnBackCol);
+		btn.setForeground(btnForeCol);
+		btn.setFont(btnFont);
 	}
 
 }

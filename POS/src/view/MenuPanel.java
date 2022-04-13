@@ -1,19 +1,21 @@
 package view;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.table.DefaultTableModel;
 
 import model.CategoryDao;
 import model.CategoryVo;
@@ -31,10 +33,12 @@ public class MenuPanel extends BasicPanel {
 	Vector<JButton> catButton;
 	Vector<JButton> menuButton;
 	JTable jTable;
-	JScrollPane jsc;
+	JScrollPane jsc, jsb;
 	AddMenu adm = null;
 	AddCat adc = null;
 	ClickedMenu ckm = null;
+	GridLayout gl;
+	
 
 	public MenuPanel() {
 		initComponent();
@@ -50,28 +54,36 @@ public class MenuPanel extends BasicPanel {
 	}
 
 	private void initComponent() {
-		subTitle.setFont(new Font("본고딕", Font.BOLD, 50));
 		subTitle.setText("메뉴 관리");
-
+		
+		gl = new GridLayout();
+		
 		// top_bottom Layout 설정
-		top_bottom.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
+		top_bottom.setLayout(gl);
 		top_bottom.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
 		jsc = new JScrollPane(top_bottom);
-
+		
 		top.remove(top_bottom);
 		top.add(jsc);
 
 		// side 패널
 		side.setLayout(new BorderLayout());
-		// bottom 패널
-		bottom.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
-		bottom.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 		side.setBorder(BorderFactory.createEmptyBorder(20, 50, 50, 50));
+		
+		// bottom 패널
+		bottom.setLayout(new GridLayout(0,5,4,4));
+		bottom.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+		
 
 		btnAddCat = new JButton("+카테고리");
+		btnAddCat.setBackground   (new Color(229, 239, 204));
+		btnAddCat.setFont         (new Font("본고딕", Font.BOLD, 12));
 		btnAddMenu = new JButton("메뉴 등록");
+		btnAddMenu.setBackground(new Color(229, 239, 204));
+		top_top.setBackground(Color.white);
 
 		viewCategory();
+		
 		if (catList.size() != 0) {
 			viewMenuByCategoryId(catList.get(0).getCategoryID());
 		}
@@ -104,15 +116,20 @@ public class MenuPanel extends BasicPanel {
 		}
 		for (JButton jbtn : catButton) {
 			jbtn.addActionListener(new CategoryAction());
+			jbtn.setPreferredSize(new Dimension(45,28));
+			jbtn.setBackground   (new Color(52, 152, 219));
+			jbtn.setForeground   (new Color(255,255,255));
+			jbtn.setFont         (new Font("본고딕", Font.BOLD, 12));
 			top_bottom.add(jbtn);
 		}
 
 		top_bottom.add(btnAddCat);
-
+		
 		top_bottom.revalidate();
 		top_bottom.repaint();
 	}
-
+	
+	// 메뉴 버튼 생성
 	public void viewMenuByCategoryId(int categoryId) {
 		bottom.removeAll();
 
@@ -125,12 +142,21 @@ public class MenuPanel extends BasicPanel {
 		}
 
 		for (JButton mbtn : menuButton) {
+			mbtn.setBackground   (new Color(100,100,100));
+			mbtn.setForeground   (new Color(255,255,255));
+			mbtn.setFont         (new Font("본고딕", Font.BOLD, 20));
 			mbtn.addActionListener(new MenuAction());
 			bottom.add(mbtn);
 		}
-
+		spacePanel(bottom);
 		bottom.revalidate();
 		bottom.repaint();
+	}
+	
+	public void spacePanel(JPanel panel) {
+		for(int i = panel.getComponentCount(); i < 15; i++) {
+			panel.add(new JPanel());
+		}
 	}
 
 	class CategoryAction implements ActionListener {
@@ -147,12 +173,13 @@ public class MenuPanel extends BasicPanel {
 			System.out.println(choice);
 			// 예:0 아니오:1 x: -1
 			if (choice == 0) {
-				cdao.deleteCategory(cvo.getCategoryName());
 				MenuDao mdao = new MenuDao();
 				if (mdao.getMenuListByCategoryId(cvo.getCategoryID()).size() > 0) {
 					JOptionPane.showMessageDialog(null, "먼저 해당 카테고리 내 모든 메뉴를 삭제 해주십시오.", "에러",
 							JOptionPane.ERROR_MESSAGE);
+					return;
 				}
+				cdao.deleteCategory(cvo.getCategoryName());
 				viewCategory();
 			} else {
 				System.out.println(cvo.getCategoryName() + "(이)가 삭제되지 않았습니다.");
@@ -174,5 +201,4 @@ public class MenuPanel extends BasicPanel {
 			ckm = new ClickedMenu(btnTxt[0], mp);
 		}
 	}
-
 }

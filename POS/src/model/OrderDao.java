@@ -2,6 +2,7 @@ package model;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.Vector;
 
 public class OrderDao {
@@ -47,8 +48,31 @@ public class OrderDao {
 			e.printStackTrace();
 		}
 	}
-	
-	public void getOrderListById(int orderId) {
-		
+	//
+	public Vector<OrderListVo> getOrderListById(int orderId) {
+			PreparedStatement pstmt = null;
+			ResultSet rs = null;
+			String sql = "SELECT (SELECT MENU_NAME FROM MENU WHERE MENU_ID = O.MENU_ID) MENU_NAME, "
+					+ "QUANTITY, TOTAL_PRICE FROM ORDER_LIST O WHERE ORDER_ID = ?";
+			Vector<OrderListVo> voList = null;
+
+			try {
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setInt(1, orderId);
+				rs = pstmt.executeQuery();
+
+				voList = new Vector<OrderListVo>();
+
+				while (rs.next()) {
+					OrderListVo vo = new OrderListVo(rs.getString("MENU_NAME"),
+							Integer.parseInt(rs.getString("QUANTITY")),
+							Integer.parseInt(rs.getString("TOTAL_PRICE")));
+					voList.add(vo);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+			return voList;
 	}
 }

@@ -1,4 +1,4 @@
-package view;
+package view.sales;
 
 import java.io.BufferedWriter;
 import java.io.File;

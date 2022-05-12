@@ -1,10 +1,9 @@
-package view;
+package view.sales;
 
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -33,23 +32,28 @@ import model.OrderDao;
 import model.OrderListVo;
 import model.SalesDao;
 import model.SalesVo;
+import view.BasicPanel;
+import view.HomePanel;
+import view.MainFrame;
 
 public class SalesPanel extends BasicPanel implements ActionListener {
 	MainFrame mf;
 
 	JPanel bottom_bottom;
-	JButton btnLookup, btnToExcel;
-	JLabel lbl_Cash, lbl_Card, lbl_All, lbl_Order_List, lbl_Order_Number, lbl_Order_Date, lbl_P;
+	JButton btnSearch, btnToExcel;
+	JLabel lbl_Cash, lbl_Card, lbl_All, lbl_Order_List, lbl_Order_Number, lbl_Order_Date, lbl_Price;
 	JLabel lbl_CashTot, lbl_CardTot, lbl_Tot;
 	JLabel lbl_Get_Order_Number, lbl_Get_Order_Date, lbl_Get_Price;
 	JScrollPane scpane;
 	JTable salesTable, orderTable;
-	GridBagLayout gbl;
-	GridBagConstraints gbc;
+
 	static DateChooser date1;
 	static DateChooser date2;
 	JTextField textDate1;
 	JTextField textDate2;
+
+	GridBagLayout gbl;
+	GridBagConstraints gbc;
 
 	public SalesPanel() {
 		initComponent();
@@ -110,7 +114,6 @@ public class SalesPanel extends BasicPanel implements ActionListener {
 		salesTable = new JTable();
 		tableRefresh(salesTable, LocalDate.now().toString(), LocalDate.now().toString()); // 당일 매출 테이블로 초기화
 		salesTable.addMouseListener(new MouseListener() {
-
 			@Override
 			public void mouseReleased(MouseEvent e) {
 			}
@@ -129,14 +132,17 @@ public class SalesPanel extends BasicPanel implements ActionListener {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				getClicked();
+				int r = salesTable.getSelectedRow();
+				lbl_Get_Order_Number.setText((String) salesTable.getValueAt(r, 0));
+				lbl_Get_Order_Date.setText((String) salesTable.getValueAt(r, 1));
+				lbl_Get_Price.setText((String) salesTable.getValueAt(r, 5));
+
 				tableRefresh(orderTable, salesTable.getSelectedRow());
 			}
 
 		});
 		scpane = new JScrollPane(salesTable);
 		scpane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		////////////////////////////////////////////////////////////////////////////
 
 		salesTable.setRowHeight(30);
 		scpane.setSize(500, 700);
@@ -152,18 +158,18 @@ public class SalesPanel extends BasicPanel implements ActionListener {
 		gbc.weightx = 1.0;
 		gbc.weighty = 1.0;
 
-		gbAddb(scpane, 0, 0, 1, 1);
-		gbAddb(bottom_bottom, 0, 1, 2, 2);
-		////////////////////////////////////////////////////////////////////////////
+		gbAddBottom(scpane, 0, 0, 1, 1);
+		gbAddBottom(bottom_bottom, 0, 1, 2, 2);
+
 		// top_bottom
-		btnLookup = new JButton("조회");
+		btnSearch = new JButton("조회");
 		btnToExcel = new JButton("엑셀 저장");
-		btnLookup = new JButton("조회");
+		btnSearch = new JButton("조회");
 		GridBagConstraints gbc_btn1 = new GridBagConstraints();
 		gbc_btn1.gridx = 5;
 		gbc_btn1.gridy = 1;
-		top_bottom.add(btnLookup, gbc_btn1);
-		btnLookup.addActionListener(this);
+		top_bottom.add(btnSearch, gbc_btn1);
+		btnSearch.addActionListener(this);
 
 		btnToExcel = new JButton("엑셀 저장");
 		GridBagConstraints gbc_btn2 = new GridBagConstraints();
@@ -173,7 +179,7 @@ public class SalesPanel extends BasicPanel implements ActionListener {
 		top_bottom.add(btnToExcel, gbc_btn2);
 		btnToExcel.addActionListener(this);
 
-		// side //////////////////////////////////////////////////
+		// side
 		gbl = new GridBagLayout();
 		side.setLayout(gbl);
 
@@ -187,43 +193,22 @@ public class SalesPanel extends BasicPanel implements ActionListener {
 		gbc.weighty = 1.0;
 
 		lbl_Order_Number = new JLabel("주문 번호 : ");
-		gbAdd(lbl_Order_Number, 0, 0, 1, 1);
+		gbAddSide(lbl_Order_Number, 0, 0, 1, 1);
 		lbl_Get_Order_Number = new JLabel();
-		gbAdd(lbl_Get_Order_Number, 1, 0, 1, 1);
+		gbAddSide(lbl_Get_Order_Number, 1, 0, 1, 1);
 		lbl_Order_Date = new JLabel("주문 일자 : ");
-		gbAdd(lbl_Order_Date, 0, 1, 1, 1);
+		gbAddSide(lbl_Order_Date, 0, 1, 1, 1);
 		lbl_Get_Order_Date = new JLabel();
-		gbAdd(lbl_Get_Order_Date, 1, 1, 1, 1);
+		gbAddSide(lbl_Get_Order_Date, 1, 1, 1, 1);
 		lbl_Order_List = new JLabel("주문 내역");
-		gbAdd(lbl_Order_List, 0, 2, 1, 1);
+		gbAddSide(lbl_Order_List, 0, 2, 1, 1);
 		gbc.weighty = 3;
-		gbAdd(orderTableScroll, 0, 3, 2, 2);
+		gbAddSide(orderTableScroll, 0, 3, 2, 2);
 		gbc.weighty = 1;
-		lbl_P = new JLabel("결제 금액 : ");
-		gbAdd(lbl_P, 0, 5, 1, 1);
+		lbl_Price = new JLabel("결제 금액 : ");
+		gbAddSide(lbl_Price, 0, 5, 1, 1);
 		lbl_Get_Price = new JLabel();
-		gbAdd(lbl_Get_Price, 1, 5, 1, 1);
-		//////////////////////////////////////////////////////////
-	}
-
-	private void gbAdd(JComponent c, int x, int y, int w, int h) {
-		gbc.gridx = x;
-		gbc.gridy = y;
-		gbc.gridwidth = w;
-		gbc.gridheight = h;
-		gbl.setConstraints(c, gbc);
-		gbc.insets = new Insets(2, 2, 2, 2);
-		side.add(c, gbc);
-	}
-
-	private void gbAddb(JComponent c, int x, int y, int w, int h) {
-		gbc.gridx = x;
-		gbc.gridy = y;
-		gbc.gridwidth = w;
-		gbc.gridheight = h;
-		gbl.setConstraints(c, gbc);
-		gbc.insets = new Insets(2, 2, 2, 2);
-		bottom.add(c, gbc);
+		gbAddSide(lbl_Get_Price, 1, 5, 1, 1);
 	}
 
 // 테이블 새로고침 - 날짜 조회
@@ -331,6 +316,7 @@ public class SalesPanel extends BasicPanel implements ActionListener {
 		return ret;
 	}
 
+	// 엑셀 저장
 	private void saveExcel() {
 		File file = null;
 		JFileChooser fc = new JFileChooser(System.getProperty("user.home") + "/Desktop");
@@ -352,13 +338,13 @@ public class SalesPanel extends BasicPanel implements ActionListener {
 			file = new File(fc.getSelectedFile().toString() + filter.substring(1));
 		}
 
-      new SaveExcel(file);
+		new SaveExcel(file);
 	}
 
 	private void tableRefresh(JTable table, int selectedRow) {
 		OrderDao odao = new OrderDao();
 		Vector<OrderListVo> ovo = odao
-				.getOrderListById(Integer.parseInt((String) salesTable.getValueAt(selectedRow, 0)));
+				.getOrderListById(Integer.parseInt((String)salesTable.getValueAt(selectedRow, 0)));
 		table.setModel(new DefaultTableModel(getDataList2(ovo), getColumnList2()) {
 			@Override
 			public boolean isCellEditable(int row, int column) {
@@ -402,21 +388,24 @@ public class SalesPanel extends BasicPanel implements ActionListener {
 		return list;
 	}
 
-	// 테이블 클릭했을 때
-	private String getClicked() {
-		int c = salesTable.getSelectedColumn(); // 선택된 칼럼
-		int r = salesTable.getSelectedRow(); // 선택된 줄
-		String clicked_Order_Num = (String) salesTable.getValueAt(r, 0);
-		String clicked_Order_Date = (String) salesTable.getValueAt(r, 1);
-		String clicked_Order_Sales = (String) salesTable.getValueAt(r, 5);
-		System.out.println("클릭한 주문번호: " + clicked_Order_Num);
-		System.out.println("클릭한 주문날짜: " + clicked_Order_Date);
-		System.out.println("클릭한 결제금액: " + clicked_Order_Sales);
+	private void gbAddSide(JComponent c, int x, int y, int w, int h) {
+		gbc.gridx = x;
+		gbc.gridy = y;
+		gbc.gridwidth = w;
+		gbc.gridheight = h;
+		gbl.setConstraints(c, gbc);
+		gbc.insets = new Insets(2, 2, 2, 2);
+		side.add(c, gbc);
+	}
 
-		lbl_Get_Order_Number.setText(clicked_Order_Num);
-		lbl_Get_Order_Date.setText(clicked_Order_Date);
-		lbl_Get_Price.setText(clicked_Order_Sales);
-		return clicked_Order_Num;
+	private void gbAddBottom(JComponent c, int x, int y, int w, int h) {
+		gbc.gridx = x;
+		gbc.gridy = y;
+		gbc.gridwidth = w;
+		gbc.gridheight = h;
+		gbl.setConstraints(c, gbc);
+		gbc.insets = new Insets(2, 2, 2, 2);
+		bottom.add(c, gbc);
 	}
 
 }

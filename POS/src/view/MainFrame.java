@@ -15,7 +15,7 @@ public class MainFrame extends JFrame {
 	public void init() {
 		setTitle("카페 POS");
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		setLocationRelativeTo(null);
+//		setLocationRelativeTo(null);
 	}
 
 	public static void main(String[] args) {

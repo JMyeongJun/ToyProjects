@@ -1,4 +1,4 @@
-package view;
+package view.order;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -9,8 +9,6 @@ import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
@@ -23,24 +21,27 @@ import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumnModel;
 
 import model.CategoryDao;
 import model.CategoryVo;
 import model.MenuDao;
 import model.MenuVo;
+import view.BasicPanel;
+import view.HomePanel;
+import view.MainFrame;
 
-public class OrderPanel extends BasicPanel implements ActionListener, MouseListener {
+public class OrderPanel extends BasicPanel implements ActionListener{
+	MainFrame mf;
 
 	// Field
-	MainFrame mf;
 	private GridBagLayout gb;
 	private GridBagConstraints gbc;
-	private GridLayout gl;
 
 	public JLabel lblOrder;
 	public JTable tblOrder;
-	public JButton btn_DelMenu, btn_MnsMenu, btn_PlsMenu, btn_Payment, testbtn;
+	public JButton btnDelMenu, btn_MnsMenu, btn_PlsMenu, btn_Payment;
 	Vector<JButton> btnCategory, btnMenu;
 
 	// 생성자
@@ -60,7 +61,6 @@ public class OrderPanel extends BasicPanel implements ActionListener, MouseListe
 	private void initComponent() {
 		subTitle.setText("주문");
 
-		gl = new GridLayout(1, 0, 5, 0);
 		gb = new GridBagLayout();
 		gbc = new GridBagConstraints();
 
@@ -183,24 +183,32 @@ public class OrderPanel extends BasicPanel implements ActionListener, MouseListe
 		});
 
 		JScrollPane scroll = new JScrollPane(tblOrder);
+		scroll.setBorder(BorderFactory.createEmptyBorder());
 
-		DefaultTableCellRenderer center = new DefaultTableCellRenderer();
-		center.setHorizontalAlignment(SwingConstants.CENTER);
-
-		TableColumnModel center2 = tblOrder.getColumnModel();
-		for (int i = 0; i < center2.getColumnCount(); i++) {
-			center2.getColumn(i).setCellRenderer(center);
+		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+		// 가운데 정렬
+		renderer.setHorizontalAlignment(SwingConstants.CENTER);
+		// 컬럼 테두리 없앰
+		renderer.setBorder(null);
+		
+		TableColumnModel columnModel = tblOrder.getColumnModel();
+		for (int i = 0; i < columnModel.getColumnCount(); i++) {
+			columnModel.getColumn(i).setCellRenderer(renderer);
 		}
+		
+		JTableHeader header = tblOrder.getTableHeader();
+		header.setDefaultRenderer(renderer);
+//		header.setVisible(false);
 
-		tblOrder.getParent().setBackground(Color.WHITE);
+		tblOrder.setBackground(colorSide);
+		tblOrder.getParent().setBackground(colorSide);
 		tblOrder.setFont(basicFont(20));
-		tblOrder.setRowHeight(30);
-		tblOrder.setShowVerticalLines(false);
-		tblOrder.setShowHorizontalLines(false);
+		tblOrder.setRowHeight(50);
+		tblOrder.setShowGrid(false);
 
 		// Side - 나머지 설정
 		lblOrder = new JLabel("주문내역");
-		btn_DelMenu = new JButton("삭제");
+		btnDelMenu = new JButton("삭제");
 		btn_MnsMenu = new JButton("-");
 		btn_PlsMenu = new JButton("+");
 		btn_Payment = new JButton("결제");
@@ -212,7 +220,7 @@ public class OrderPanel extends BasicPanel implements ActionListener, MouseListe
 		gbAdd(scroll, 0, 1, 3, 1);
 
 		gbc.weighty = 0.5;
-		gbAdd(btn_DelMenu, 0, 2, 1, 1);
+		gbAdd(btnDelMenu, 0, 2, 1, 1);
 		gbAdd(btn_MnsMenu, 1, 2, 1, 1);
 		gbAdd(btn_PlsMenu, 2, 2, 1, 1);
 		gbc.insets = new Insets(0, 0, 0, 0);
@@ -220,7 +228,7 @@ public class OrderPanel extends BasicPanel implements ActionListener, MouseListe
 
 		side.add(lblOrder);
 		side.add(scroll);
-		side.add(btn_DelMenu);
+		side.add(btnDelMenu);
 		side.add(btn_MnsMenu);
 		side.add(btn_PlsMenu);
 		side.add(btn_Payment);
@@ -228,13 +236,12 @@ public class OrderPanel extends BasicPanel implements ActionListener, MouseListe
 		lblOrder.setFont(basicFont(40, Font.BOLD));
 
 		Color btn_side_col = new Color(229, 239, 204);
-		btn_DelMenu.setBackground(btn_side_col);
+		btnDelMenu.setBackground(btn_side_col);
 		btn_MnsMenu.setBackground(btn_side_col);
 		btn_PlsMenu.setBackground(btn_side_col);
 		btn_Payment.setBackground(btn_side_col);
 
-		tblOrder.addMouseListener(this);
-		btn_DelMenu.addActionListener(this);
+		btnDelMenu.addActionListener(this);
 		btn_MnsMenu.addActionListener(this);
 		btn_PlsMenu.addActionListener(this);
 		btn_Payment.addActionListener(this);
@@ -253,10 +260,10 @@ public class OrderPanel extends BasicPanel implements ActionListener, MouseListe
 	class click_Menu implements ActionListener {
 
 		@Override
-		public void actionPerformed(ActionEvent e2) {
+		public void actionPerformed(ActionEvent e) {
 
 			MenuDao dao = new MenuDao();
-			String btn_MenuName = e2.getActionCommand();
+			String btn_MenuName = e.getActionCommand();
 			DefaultTableModel model = ((DefaultTableModel) tblOrder.getModel());
 
 			for (MenuVo vo : dao.getMenuList()) {
@@ -288,29 +295,6 @@ public class OrderPanel extends BasicPanel implements ActionListener, MouseListe
 		}
 	}
 
-	// 테이블 클릭 이벤트
-	@Override
-	public void mouseClicked(MouseEvent e) {
-		int row = tblOrder.getSelectedRow();
-		System.out.println("수량: " + tblOrder.getModel().getValueAt(row, 1) + "개");
-	}
-
-	@Override
-	public void mousePressed(MouseEvent e) {
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent e) {
-	}
-
-	@Override
-	public void mouseEntered(MouseEvent e) {
-	}
-
-	@Override
-	public void mouseExited(MouseEvent e) {
-	}
-
 	// Side버튼 클릭 이벤트
 	public void actionPerformed(ActionEvent e) {
 
@@ -332,48 +316,43 @@ public class OrderPanel extends BasicPanel implements ActionListener, MouseListe
 
 	// Side -> 삭제 버튼 이벤트
 	private void click_DelMenu() {
-
-		int row = tblOrder.getSelectedRow();
 		DefaultTableModel model = ((DefaultTableModel) tblOrder.getModel());
+		int row = tblOrder.getSelectedRow();
 
+		// 선택된 행이 있을 시 해당 행 삭제
 		if (row >= 0) {
-
 			model.removeRow(row);
-
-		} else
-			System.out.println("행이 선택되지 않음");
+		} else {	// 선택된 행이 없을 시 전체 테이블 삭제
+			model.setRowCount(0);;
+		}
 	}
 
 	// Side -> (+) 버튼 이벤트
 	private void click_PlsMenu() {
-
-		int row = tblOrder.getSelectedRow();
 		DefaultTableModel model = ((DefaultTableModel) tblOrder.getModel());
+		int row = tblOrder.getSelectedRow();
 
 		if (row >= 0) {
-
 			MenuDao dao = new MenuDao();
 			MenuVo vo = dao.getMenuByName((String) model.getValueAt(row, 0));
 			int price = vo.getPrice();
 
-			int pre_Quantity = (int) model.getValueAt(row, 1);
-			int pre_Price = (int) model.getValueAt(row, 2);
+			int preQuantity = (int) model.getValueAt(row, 1);
+			int prePrice = (int) model.getValueAt(row, 2);
 
-			model.setValueAt(pre_Quantity + 1, row, 1);
-			model.setValueAt(pre_Price + price, row, 2);
-
-		} else
+			model.setValueAt(preQuantity + 1, row, 1);
+			model.setValueAt(prePrice + price, row, 2);
+		} else {
 			System.out.println("행이 선택되지 않음");
+		}
 	}
 
 	// Side -> (-) 버튼 이벤트
 	private void click_MnsMenu() {
-
-		int row = tblOrder.getSelectedRow();
 		DefaultTableModel model = ((DefaultTableModel) tblOrder.getModel());
+		int row = tblOrder.getSelectedRow();
 
 		if (row >= 0) {
-
 			MenuDao dao = new MenuDao();
 			MenuVo vo = dao.getMenuByName((String) model.getValueAt(row, 0));
 			int price = vo.getPrice();
@@ -381,15 +360,15 @@ public class OrderPanel extends BasicPanel implements ActionListener, MouseListe
 			int pre_Quantity = (int) model.getValueAt(row, 1);
 			int pre_Price = (int) model.getValueAt(row, 2);
 
-			model.setValueAt(pre_Quantity - 1, row, 1);
-			model.setValueAt(pre_Price - price, row, 2);
-
 			if (pre_Quantity == 1) {
 				click_DelMenu();
 			}
-
-		} else
+			
+			model.setValueAt(pre_Quantity - 1, row, 1);
+			model.setValueAt(pre_Price - price, row, 2);
+		} else {
 			System.out.println("행이 선택되지 않음");
+		}
 	}
 
 	// Side -> 결제 버튼 이벤트

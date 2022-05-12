@@ -1,4 +1,4 @@
-package view;
+package view.menu;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -23,7 +23,7 @@ public class AddMenu extends JFrame {
 	MenuPanel mp;
 	
 	JButton btnOk, btnCancel;
-	JComboBox cbCat;
+	JComboBox<String> cbCat;
 	JLabel lblMenuName, lblMenuPrice, lblCat;
 	JTextField tfMenuName, tfMenuPrice;
 	JPanel btnPanel;
@@ -97,7 +97,7 @@ public class AddMenu extends JFrame {
 			this.dispose();
 		});
 
-		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		setLocationRelativeTo(null);
 		setSize(500, 500);
 		setVisible(true);

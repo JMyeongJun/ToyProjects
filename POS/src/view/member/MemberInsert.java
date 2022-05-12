@@ -1,4 +1,4 @@
-package view;
+package view.member;
 
 import java.awt.Color;
 import java.awt.GridBagConstraints;
@@ -12,23 +12,15 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JTable;
 import javax.swing.JTextField;
 
 import model.MemberDao;
-import model.MemberVo;
 
 public class MemberInsert extends JFrame implements ActionListener {
-
 	// Field
-	MemberPanel memberPanel = null;
-	String id = null;
-
-	JFrame jFrame;
 	JButton btnInsert, btnCancel;
-	JLabel lblName, lblTel;
-	JTextField txtName, txtTel;
-	JTable jTable;
+	JLabel lblName, lblPhoneNumber;
+	JTextField txtName, txtPhoneNumber;
 
 	GridBagLayout gbl;
 	GridBagConstraints gbc;
@@ -36,16 +28,6 @@ public class MemberInsert extends JFrame implements ActionListener {
 	// 생성자
 	public MemberInsert() {
 		initComponent();
-	}
-
-	public MemberInsert(MemberPanel memberPanel) {
-		this();
-		this.memberPanel = memberPanel;
-	}
-
-	public MemberInsert(String id, MemberPanel memberPanel) {
-		this(memberPanel);
-		this.id = id;
 	}
 
 	private void initComponent() {
@@ -61,23 +43,18 @@ public class MemberInsert extends JFrame implements ActionListener {
 		this.getContentPane().setBackground(Color.white);
 
 		setSize(350, 500);
-		setLocation(300, 100);
-		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
 		// 라벨
-		this.setLayout(new GridBagLayout());
-
 		lblName = new JLabel("이름 입력");
 		txtName = new JTextField(10);
-		txtName.getText();
 		gbAdd(lblName, 0, 0, 1, 1);
 		gbAdd(txtName, 0, 1, 3, 1);
 
-		lblTel = new JLabel("전화번호 입력");
-		txtTel = new JTextField(10);
-		txtTel.getText();
-		gbAdd(lblTel, 0, 2, 1, 1);
-		gbAdd(txtTel, 0, 3, 3, 1);
+		lblPhoneNumber = new JLabel("전화번호 입력");
+		txtPhoneNumber = new JTextField(10);
+		gbAdd(lblPhoneNumber, 0, 2, 1, 1);
+		gbAdd(txtPhoneNumber, 0, 3, 3, 1);
 
 		// 버튼
 		btnCancel = new JButton("취소");
@@ -111,13 +88,13 @@ public class MemberInsert extends JFrame implements ActionListener {
 
 		switch (e.getActionCommand()) {
 		case "등록":
-			if(txtTel.getText().length() == 0 || txtName.getText().length() == 0) {
+			if(txtPhoneNumber.getText().length() == 0 || txtName.getText().length() == 0) {
 				JOptionPane.showMessageDialog(null, "이름과 전화번호를 입력해주세요.", "확인", JOptionPane.WARNING_MESSAGE);
 				return;
 			}
-			dao.insertMember(txtName.getText(), txtTel.getText());
-			MemberPanel.jTableRefresh();
-			this.dispose();
+			dao.insertMember(txtName.getText(), txtPhoneNumber.getText());
+			MemberPanel.tableRefresh(MemberPanel.table);
+			dispose();
 			break;
 
 		case "취소":

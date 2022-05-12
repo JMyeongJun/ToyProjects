@@ -1,8 +1,7 @@
-package view;
+package view.menu;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -20,6 +19,9 @@ import model.CategoryDao;
 import model.CategoryVo;
 import model.MenuDao;
 import model.MenuVo;
+import view.BasicPanel;
+import view.HomePanel;
+import view.MainFrame;
 
 public class MenuPanel extends BasicPanel {
 	MainFrame mf;

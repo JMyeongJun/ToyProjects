@@ -1,4 +1,4 @@
-package view;
+package view.menu;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -38,7 +38,7 @@ public class AddCat extends JFrame {
 
 		// 레이아웃 설정
 		gb = new GridBagLayout();
-		this.setLayout(gb);
+		setLayout(gb);
 
 		gbc = new GridBagConstraints();
 		gbc.fill = GridBagConstraints.BOTH;

@@ -1,4 +1,4 @@
-package view;
+package view.member;
 
 import java.awt.Color;
 import java.awt.GridBagConstraints;
@@ -20,18 +20,16 @@ import model.MemberDao;
 import model.MemberVo;
 
 public class MemberUpdate extends JFrame implements ActionListener {
-
 	// Field
 	MemberPanel memberPanel = null;
 
-	String id = null;
-	String number = null;
-	String point = null;
+	String currentName = null;
+	String currentPhoneNumber = null;
+	String currentPoint = null;
 
-	JFrame jFrame;
-	JButton btnUpdate, btnCancel, btnDelete, btnFind;
-	JLabel lblName, lblTel, lblCurrent, lblPoint;
-	JTextField txtName, txtTel, txtCurrent, txtPoint;
+	JLabel lblName, lblTel, lblPhoneNumber, lblPoint;
+	JTextField txtName, txtPhoneNumber, txtPoint;
+	JButton btnUpdate, btnCancel, btnDelete;
 
 	GridBagLayout gbl;
 	GridBagConstraints gbc;
@@ -41,20 +39,12 @@ public class MemberUpdate extends JFrame implements ActionListener {
 		initComponent();
 	}
 
-	public MemberUpdate(MemberPanel memberPanel) {
+	public MemberUpdate(String name, String number, String point, MemberPanel memberPanel) {
 		this();
 		this.memberPanel = memberPanel;
-	}
-
-	public MemberUpdate(String id, String number, String point, MemberPanel memberPanel) {
-		this(memberPanel);
-		this.id = id;
-		this.number = number;
-		this.point = point;
-
-		txtName.setText(id);
-		txtCurrent.setText(number);
-		txtPoint.setText(point);
+		this.currentName = name;
+		this.currentPhoneNumber = number;
+		this.currentPoint = point;
 	}
 
 	private void initComponent() {
@@ -65,33 +55,29 @@ public class MemberUpdate extends JFrame implements ActionListener {
 		gbc.fill = GridBagConstraints.BOTH;
 		gbc.weightx = 1.0;
 		gbc.weighty = 1.0;
-		// 여백을 분배하는 변수, 모두 0이면 가운데로 모임
 
 		// 패널
+		this.setLayout(new GridBagLayout());
 		this.getContentPane().setBackground(Color.WHITE);
 
 		setSize(350, 500);
-		setLocation(300, 100);
-		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-
-		// 라벨
-		this.setLayout(new GridBagLayout());
+		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
 		lblName = new JLabel("이름");
 		txtName = new JTextField(10);
-		txtName.setText("");
+		txtName.setText(currentName);
 		gbAdd(lblName, 0, 0, 1, 1);
 		gbAdd(txtName, 0, 1, 3, 1);
 
-		lblCurrent = new JLabel("전화번호");
-		txtCurrent = new JTextField(10);
-		txtCurrent.setText("");
-		gbAdd(lblCurrent, 0, 2, 1, 1);
-		gbAdd(txtCurrent, 0, 3, 3, 1);
+		lblPhoneNumber = new JLabel("전화번호");
+		txtPhoneNumber = new JTextField(10);
+		txtPhoneNumber.setText(currentPhoneNumber);
+		gbAdd(lblPhoneNumber, 0, 2, 1, 1);
+		gbAdd(txtPhoneNumber, 0, 3, 3, 1);
 
 		lblPoint = new JLabel("보유 포인트");
 		txtPoint = new JTextField(10);
-		txtPoint.setText("");
+		txtPoint.setText(currentPoint);
 		txtPoint.setEditable(false);
 		gbAdd(lblPoint, 0, 4, 1, 1);
 		gbAdd(txtPoint, 0, 5, 3, 1);
@@ -125,53 +111,22 @@ public class MemberUpdate extends JFrame implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		MemberDao dao = new MemberDao();
-		MemberVo vo = getViewData();
 
 		switch (e.getActionCommand()) {
 		case "수정":
-			vo = getViewData();
-			dao.updateMember(number, txtName.getText(), txtCurrent.getText());
-			clearViewData();
-			MemberPanel.jTableRefresh();
-			this.dispose();
+			dao.updateMember(currentPhoneNumber, txtName.getText(), txtPhoneNumber.getText());
+			MemberPanel.tableRefresh(MemberPanel.table);
+			dispose();
 			break;
 		case "삭제":
-			dao.deleteMember(txtCurrent.getText());
-			vo.setPhoneNumber(txtCurrent.getText());
-			if (txtCurrent.getText() == null)
-				System.out.println("삭제 안됨");
-			clearViewData();
-			MemberPanel.jTableRefresh();
-			this.dispose();
+			dao.deleteMember(currentPhoneNumber);
+			MemberPanel.tableRefresh(MemberPanel.table);
+			dispose();
 			break;
 		case "취소":
-			clearViewData();
+			dispose();
 			break;
 		}
-	}
-
-	// txt -> vo
-	private MemberVo getViewData() {
-		String memberName = txtName.getText();
-		String phoneNumber = txtCurrent.getText();
-		int Point = 0;
-		MemberVo vo = new MemberVo(memberName, phoneNumber, Point);
-		return vo;
-	}
-
-	// vo -> txt
-	private void setViewData(MemberVo vo) {
-		txtName.setText(vo.getMemberName());
-		txtCurrent.setText(vo.getPhoneNumber());
-		txtPoint.setText(Integer.toString(vo.getPoint()));
-	}
-
-	// 화면 지움
-	private void clearViewData() {
-		txtName.setText("");
-		txtCurrent.setText("");
-		txtPoint.setText("");
-		txtCurrent.setFocusable(true);
 	}
 
 }

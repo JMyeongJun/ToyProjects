@@ -1,12 +1,8 @@
-package view;
+package view.member;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.GridLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -15,8 +11,6 @@ import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -26,6 +20,9 @@ import javax.swing.table.DefaultTableModel;
 
 import model.MemberDao;
 import model.MemberVo;
+import view.BasicPanel;
+import view.HomePanel;
+import view.MainFrame;
 
 public class MemberPanel extends BasicPanel implements ActionListener, MouseListener {
 	MainFrame mf;
@@ -33,14 +30,13 @@ public class MemberPanel extends BasicPanel implements ActionListener, MouseList
 	JButton btnInsert, btnUpdate;
 	JScrollPane pane;
 	static JTable table;
-	JLabel lbl;
+	JLabel lblMemberList;
 
-	MemberInsert proc = null;
-	MemberUpdate proc2 = null;
+	MemberInsert memberInsert = null;
+	MemberUpdate memberUpdate = null;
 
 	public MemberPanel() {
 		initComponent();
-
 	}
 	
 	public MemberPanel(MainFrame mf) {
@@ -54,7 +50,7 @@ public class MemberPanel extends BasicPanel implements ActionListener, MouseList
 	private void initComponent() {
 		subTitle.setText("회원관리");
 
-		// 버튼 등록
+		// side 버튼 등록
 		btnInsert = new JButton("회원등록");
 		btnInsert.setFont(basicFont(20, Font.BOLD));
 		btnUpdate = new JButton("회원수정");
@@ -69,65 +65,34 @@ public class MemberPanel extends BasicPanel implements ActionListener, MouseList
 		side.add(btnInsert);
 		side.add(btnUpdate);
 
-		// 라벨 추가
-
+		// top_bottom 라벨 추가
 		top_bottom.setLayout(null);
 
-		lbl = new JLabel("회원 목록");
-		lbl.setBounds(10, -10, 150, 100);
-		lbl.setFont(basicFont(30, Font.BOLD));
-		lbl.setFont(lbl.getFont().deriveFont(25.0f));
-		top_bottom.add(lbl);
+		lblMemberList = new JLabel("회원 목록");
+		lblMemberList.setBounds(10, -10, 150, 100);
+		lblMemberList.setFont(basicFont(30, Font.BOLD));
+		lblMemberList.setFont(lblMemberList.getFont().deriveFont(25.0f));
+		top_bottom.add(lblMemberList);
 
-		// JTable 추가
+		// bottom JTable 추가
 		table = new JTable();
 		table.setRowHeight(30);
 		table.setFont(basicFont(20, Font.PLAIN));
+		tableRefresh(table);
 		
-		
-		table.setModel(new DefaultTableModel(getDataList(), getColumnList()) {
-			public boolean isCellEditable(int row, int column) {
-				return false;
-			}
-		});
 		pane = new JScrollPane(table);
 		bottom.setLayout(new BorderLayout());
 		bottom.add(pane, BorderLayout.CENTER);
 
-		// 기능 추가
+		// action 추가
 		btnInsert.addActionListener(this);
 		btnUpdate.addActionListener(this);
-
 		table.addMouseListener(this);
 
+		// 출력
 		setVisible(true);
 	}
 
-	// Table - 데이터(rows) 반환
-	private static Vector<? extends Vector<String>> getDataList() {
-		MemberDao dao = new MemberDao();
-		Vector<MemberVo> voList = dao.getMemberList();
-		Vector<Vector<String>> list = new Vector<Vector<String>>();
-
-		for (MemberVo vo : voList) {
-			Vector<String> row = new Vector<String>();
-
-			row.add(vo.getMemberName());
-			row.add(vo.getPhoneNumber());
-			row.add(Integer.toString(vo.getPoint()));
-
-			list.add(row);
-		}
-		return list;
-	}
-
-	private static Vector<?> getColumnList() {
-		Vector<String> cols = new Vector<String>();
-		cols.add("이름");
-		cols.add("전화번호");
-		cols.add("포인트");
-		return cols;
-	}
 
 	// button event 연결 click
 	@Override
@@ -135,15 +100,14 @@ public class MemberPanel extends BasicPanel implements ActionListener, MouseList
 
 		switch (e.getActionCommand()) {
 		case "회원등록":
-			if (proc != null) {
-				proc.dispose();
+			if (memberInsert != null) {
+				memberInsert.dispose();
 			}
-			proc = new MemberInsert();
+			memberInsert = new MemberInsert();
 
-			jTableRefresh();
+			tableRefresh(table);
 			break;
 		case "회원수정":
-			System.out.println(e);
 			int r = table.getSelectedRow();
 
 			if(r < 0) {
@@ -154,16 +118,16 @@ public class MemberPanel extends BasicPanel implements ActionListener, MouseList
 			String id = (String) table.getValueAt(r, 0);
 			String number = (String) table.getValueAt(r, 1);
 			String point = (String) table.getValueAt(r, 2);
-			System.out.println(id);
 
-			if (proc2 != null)
-				proc2.dispose();
-			proc2 = new MemberUpdate(id, number, point, this);
+			if (memberUpdate != null) {
+				memberUpdate.dispose();
+			}
+			memberUpdate = new MemberUpdate(id, number, point, this);
 			break;
 		}
 	}
 
-	public static void jTableRefresh() {
+	public static void tableRefresh(JTable table) {
 		table.setModel(new DefaultTableModel(getDataList(), getColumnList()) {
 			@Override
 			public boolean isCellEditable(int row, int column) {
@@ -172,48 +136,62 @@ public class MemberPanel extends BasicPanel implements ActionListener, MouseList
 		});
 		table.repaint();
 	}
+	
+	// Table - 데이터(rows) 반환
+	private static Vector<? extends Vector<String>> getDataList() {
+		MemberDao dao = new MemberDao();
+		Vector<MemberVo> voList = dao.getMemberList();
+		Vector<Vector<String>> list = new Vector<Vector<String>>();
+		
+		for (MemberVo vo : voList) {
+			Vector<String> row = new Vector<String>();
+			row.add(vo.getMemberName());
+			row.add(vo.getPhoneNumber());
+			row.add(Integer.toString(vo.getPoint()));
+			
+			list.add(row);
+		}
+		return list;
+	}
+	
+	private static Vector<?> getColumnList() {
+		Vector<String> cols = new Vector<String>();
+		cols.add("이름");
+		cols.add("전화번호");
+		cols.add("포인트");
+		return cols;
+	}
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		// 마우스 더블 클릭
 		if (e.getClickCount() == 2) {
-
-			System.out.println(e);
-			int c = table.getSelectedColumn();
 			int r = table.getSelectedRow();
 
 			String id = (String) table.getValueAt(r, 0);
 			String number = (String) table.getValueAt(r, 1);
 			String point = (String) table.getValueAt(r, 2);
-			System.out.println(id);
 
-			if (proc2 != null)
-				proc2.dispose();
-			proc2 = new MemberUpdate(id, number, point, this);
+			if (memberUpdate != null) {
+				memberUpdate.dispose();
+			}
+			memberUpdate = new MemberUpdate(id, number, point, this);
 		}
-
 	}
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-
 	}
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
-
 	}
 }

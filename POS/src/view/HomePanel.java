@@ -13,6 +13,11 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import view.member.MemberPanel;
+import view.menu.MenuPanel;
+import view.order.OrderPanel;
+import view.sales.SalesPanel;
+
 public class HomePanel extends JPanel implements ActionListener {
 	MainFrame mf;
 	JButton btnOrder, btnMember, btnMenu, btnSales;
